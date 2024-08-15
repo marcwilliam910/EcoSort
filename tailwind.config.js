@@ -11,6 +11,12 @@ export default {
         secondary: "#0A0A0A",
         secondaryHover: "#2E7A62",
       },
+      height: {
+        dvh: "100dvh",
+      },
+    },
+    gridTemplateColumns: {
+      tableDefault: "1fr 1fr 1.5fr .75fr",
     },
   },
   plugins: [],

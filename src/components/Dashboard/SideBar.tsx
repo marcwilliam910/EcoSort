@@ -2,7 +2,7 @@ import React from "react";
 import { MdMenuOpen, MdSaveAs, MdSettings, MdLogout } from "react-icons/md";
 import { NavLink, useNavigate } from "react-router-dom";
 import { TbHeartRateMonitor } from "react-icons/tb";
-import { auth } from "../config/firebase";
+import { auth } from "../../config/firebase";
 import { signOut } from "firebase/auth";
 
 interface SideBarProps {
@@ -24,7 +24,7 @@ export default function Sidebar({ onToggle, isNavOpen }: SideBarProps) {
   return (
     <>
       <div
-        className={`absolute top-0 flex flex-col shadow-2xl pt-12 lg:pt-0 shadow-slate-500 items-center w-5/6 h-screen  bg-secondary text-white gap-8 transition-all duration-500 ease-in-out z-50 sm:w-2/4 md:w-72 lg:sticky lg:shadow ${
+        className={`fixed top-0 flex flex-col shadow-2xl pt-12 lg:pt-0 shadow-slate-500 items-center w-5/6 h-screen h-dvh  bg-secondary text-white gap-8 transition-all duration-500 ease-in-out z-50 sm:w-2/4 md:w-72 lg:sticky lg:shadow ${
           isNavOpen ? "left-0" : "-left-full"
         }`}
       >

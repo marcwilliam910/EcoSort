@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import SideBar from "../components/SideBar";
-import DashboardContent from "../components/DashboardContent";
-import { toast, ToastContainer } from "react-toastify";
+import SideBar from "../components/Dashboard/SideBar";
+import DashboardContent from "../components/Dashboard/DashboardContent";
+import { successToast } from "../utils/Toast";
+import { ToastContainer } from "react-toastify";
 
 export default function Dashboard() {
   const [isNavOpen, setIsNavOpen] = useState<boolean>(false);
@@ -11,11 +12,7 @@ export default function Dashboard() {
   }
 
   useEffect(() => {
-    toast.success("Sign In Success", {
-      position: "top-center",
-      autoClose: 5000,
-      closeOnClick: true,
-    });
+    successToast("Sign In Success");
   }, []);
 
   return (
