@@ -42,7 +42,12 @@ export default function Login() {
       );
       await signInWithEmailAndPassword(auth, userForm.email, userForm.password);
 
-      navigate("/dashboard", { replace: true });
+      navigate("/dashboard", {
+        replace: true,
+        state: {
+          fromLogin: true,
+        },
+      });
     } catch (error: any) {
       if (error.code === "auth/wrong-password") {
         setError("password");
@@ -57,7 +62,12 @@ export default function Login() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        navigate("/dashboard", { replace: true });
+        navigate("/dashboard", {
+          replace: true,
+          state: {
+            fromLogin: false,
+          },
+        });
       }
     });
 

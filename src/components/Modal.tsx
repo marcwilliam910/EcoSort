@@ -1,34 +1,58 @@
 import { IoClose } from "react-icons/io5";
-import { db } from "../config/firebase";
+import { addData, updateData } from "../config/firebase";
 import { useState } from "react";
-import { addDoc, collection } from "firebase/firestore";
 import { successAlert, errorAlert } from "../utils/SweetAlerts";
 import { BiLoader } from "react-icons/bi";
 
 interface ModalProps {
   setIsModalOpen: (isModalOpen: boolean) => void;
+  readRecord: () => void;
+  isEditing: any;
+  formData: FormData;
+  setFormData: (data: FormData) => void;
 }
 
-export default function Modal({ setIsModalOpen }: ModalProps) {
-  const [formData, setFormData] = useState({
-    category: "",
-    weight: "",
-    date: "",
-  });
+interface FormData {
+  id: string;
+  data: {
+    type: string;
+    weight: string;
+    amount: string;
+    date: string;
+  };
+}
+
+export default function Modal({
+  setIsModalOpen,
+  readRecord,
+  isEditing,
+  formData,
+  setFormData,
+}: ModalProps) {
   const [isLoading, setisLoading] = useState<boolean>(false);
 
   function handleFormChange(e: any) {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
+    setFormData({
+      ...formData,
+      data: {
+        ...formData.data,
+        [e.target.id]: e.target.value,
+      },
+    });
   }
 
   async function handleSubmit(e: any) {
     e.preventDefault();
-
     try {
       setisLoading(true);
-      const docRef = await addDoc(collection(db, "records"), formData);
-      successAlert("Record added successfully");
+      if (isEditing) {
+        await updateData("records", formData.id, formData.data);
+      } else {
+        await addData("records", formData.data);
+      }
+      successAlert(`Record ${isEditing ? "updated" : "added"} successfully`);
       setIsModalOpen(false);
+      readRecord();
     } catch (error) {
       errorAlert("Failed to add record");
     } finally {
@@ -46,23 +70,23 @@ export default function Modal({ setIsModalOpen }: ModalProps) {
           />
         </div>
         <h1 className="mb-6 text-xl font-semibold text-center text-gray-800 md:text-2xl">
-          Add New Record
+          {isEditing ? "Edit Record" : "Add New Record"}
         </h1>
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
-            <Label html="category" value="Category" />
+            <Label html="type" value="Waste type" />
             <select
-              id="category"
+              id="type"
               className="block w-full p-2 mt-1 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              defaultValue={formData.category}
+              defaultValue={formData.data.type}
               onChange={handleFormChange}
             >
               <option value="" disabled>
-                Select a category
+                Select waste type
               </option>
               <option value="paper">Paper</option>
-              <option value="metal">Metal</option>
-              <option value="bottle">Plastic Bottle</option>
+              <option value="metal can">Metal Can</option>
+              <option value="plastic bottle">Plastic Bottle</option>
             </select>
           </div>
 
@@ -72,26 +96,45 @@ export default function Modal({ setIsModalOpen }: ModalProps) {
               type="number"
               id="weight"
               onChange={handleFormChange}
-              value={formData.weight}
+              value={formData.data.weight}
             />
           </div>
 
+          <div>
+            <Label html="amount" value="Amount" />
+            <Input
+              type="number"
+              id="amount"
+              onChange={handleFormChange}
+              value={formData.data.amount}
+            />
+          </div>
           <div>
             <Label html="date" value="Date" />
             <Input
               type="date"
               id="date"
               onChange={handleFormChange}
-              value={formData.date}
+              value={formData.data.date}
             />
           </div>
 
           <button
             type="submit"
-            className="flex items-center justify-center w-full p-2 text-white bg-blue-600 rounded-md shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className={`flex items-center justify-center w-full p-2 text-white  rounded-md shadow  focus:outline-none ${
+              isEditing
+                ? "bg-yellow-500 hover:bg-yellow-600"
+                : "bg-blue-600 hover:bg-blue-700"
+            }`}
             disabled={isLoading}
           >
-            {isLoading ? <BiLoader className="size-6 animate-spin" /> : "Add"}
+            {isLoading ? (
+              <BiLoader className="size-6 animate-spin" />
+            ) : isEditing ? (
+              "Edit"
+            ) : (
+              "Add"
+            )}
           </button>
         </form>
       </div>

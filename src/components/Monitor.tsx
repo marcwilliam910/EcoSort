@@ -5,15 +5,46 @@ import {
 import "react-circular-progressbar/dist/styles.css";
 import metal from "../assets/metal.png";
 import paper from "../assets/paper.png";
-import plastic from "../assets/plastic.png";
+import bottle from "../assets/bottle.png";
 import { CgDanger } from "react-icons/cg";
+import { useEffect, useState } from "react";
+import { fetchData } from "../config/firebase";
 
 export default function Monitor() {
+  const [wasteValues, setWasteValues] = useState<Array<any>>([]);
+
+  const images = {
+    "Metal Can": metal,
+    Paper: paper,
+    "Plastic Bottle": bottle,
+  };
+
+  async function readMonitor() {
+    try {
+      const result = await fetchData("sensor");
+      setWasteValues(result);
+    } catch (error) {}
+  }
+
+  useEffect(() => {
+    readMonitor();
+    const intervalID = setInterval(() => {
+      readMonitor();
+    }, 10000);
+
+    return () => clearInterval(intervalID);
+  }, []);
+
   return (
     <div className="flex flex-wrap justify-center gap-10 p-10 xl:gap-x-14">
-      <Chart image={metal} val={70} name="Metal Can" />
-      <Chart image={paper} val={33} name="Paper" />
-      <Chart image={plastic} val={85} name="Plastic Bottle" />
+      {wasteValues.map((value) => (
+        <Chart
+          image={images[value.id as keyof typeof images]}
+          val={value.value}
+          name={value.id}
+          key={value.id}
+        />
+      ))}
     </div>
   );
 }

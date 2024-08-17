@@ -16,7 +16,7 @@ export default {
       },
     },
     gridTemplateColumns: {
-      tableDefault: "1fr 1fr 1.5fr .75fr",
+      tableDefault: "1fr 1fr 1fr 1.5fr .75fr",
     },
   },
   plugins: [],

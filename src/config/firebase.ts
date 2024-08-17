@@ -1,6 +1,14 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  getFirestore,
+  setDoc,
+} from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_API_KEY,
@@ -14,3 +22,29 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+
+export async function fetchData(collectionName: string) {
+  const querySnapshot = await getDocs(collection(db, collectionName));
+  const recordArray = querySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    data: doc.data(),
+  }));
+  return recordArray;
+}
+
+export async function deleteData(collectionName: string, id: string) {
+  await deleteDoc(doc(db, collectionName, id));
+}
+
+export async function addData(collectionName: string, formData: Object) {
+  await addDoc(collection(db, collectionName), formData);
+}
+
+export async function updateData(
+  collectionName: string,
+  id: string,
+  formData: Object
+) {
+  const recordRef = doc(db, collectionName, id);
+  await setDoc(recordRef, formData);
+}
