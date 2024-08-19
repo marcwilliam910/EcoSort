@@ -1,7 +1,7 @@
 import { IoClose } from "react-icons/io5";
-import { addData, updateData } from "../config/firebase";
+import { addData, updateData } from "../../../../config/firebase";
 import { useState } from "react";
-import { successAlert, errorAlert } from "../utils/SweetAlerts";
+import { successAlert, errorAlert } from "../../../../utils/SweetAlerts";
 import { BiLoader } from "react-icons/bi";
 
 interface ModalProps {
@@ -84,9 +84,9 @@ export default function Modal({
               <option value="" disabled>
                 Select waste type
               </option>
-              <option value="paper">Paper</option>
-              <option value="metal can">Metal Can</option>
-              <option value="plastic bottle">Plastic Bottle</option>
+              <option value="Paper">Paper</option>
+              <option value="Metal Can">Metal Can</option>
+              <option value="Plastic Bottle">Plastic Bottle</option>
             </select>
           </div>
 

@@ -1,8 +1,8 @@
 import { createBrowserRouter } from "react-router-dom";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import Monitor from "./components/Monitor";
-import RecordKeeping from "./components/RecordKeeping";
+import Monitor from "./components/Dashboard/DashboardContent/Monitoring/Monitor";
+import RecordKeeping from "./components/Dashboard/DashboardContent/RecordKeeping/RecordKeeping";
 import Settings from "./components/Settings";
 
 export const router = createBrowserRouter([

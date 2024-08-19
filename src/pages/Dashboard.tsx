@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import SideBar from "../components/Dashboard/SideBar";
-import DashboardContent from "../components/Dashboard/DashboardContent";
+import DashboardContent from "../components/Dashboard/DashboardContent/DashboardContent";
 import { successToast } from "../utils/Toast";
 import { ToastContainer } from "react-toastify";
 import { onAuthStateChanged } from "firebase/auth";

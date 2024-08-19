@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import Modal from "./Modal";
+import { deleteData, fetchData } from "../../../../config/firebase";
+import { deleteAlert, errorAlert } from "../../../../utils/SweetAlerts";
+import DynamicChart from "../Monitoring/Charts";
 import { FaPrint } from "react-icons/fa";
-import Chart from "react-google-charts";
-import { deleteData, fetchData } from "../config/firebase";
 import { BiLoader } from "react-icons/bi";
-import { deleteAlert, errorAlert } from "../utils/SweetAlerts";
+import { FaEdit } from "react-icons/fa";
+import { RiDeleteBin6Fill } from "react-icons/ri";
+import noData from "../../../../assets/no data.jpg";
 
 const initalForm = {
   id: "",
@@ -21,12 +24,6 @@ export default function RecordKeeping() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState(initalForm);
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const data = [
-    ["Category", "Weight", { role: "style" }],
-    ["Paper", 58, "blue"],
-    ["Metal Can", 35, "yellow"],
-    ["Plastic Bottle", 45, "orange"],
-  ];
 
   async function readRecord() {
     try {
@@ -63,6 +60,14 @@ export default function RecordKeeping() {
     setIsModalOpen(true);
   }
 
+  // if (isLoading) {
+  //   return (
+  //     <div className="flex items-center justify-center h-screen">
+  //       <BiLoader className="text-3xl animate-spin" />
+  //     </div>
+  //   );
+  // }
+
   return (
     <div className="p-5 ">
       {isModalOpen && (
@@ -82,20 +87,31 @@ export default function RecordKeeping() {
               setFormData(initalForm);
               setIsModalOpen(true);
             }}
-            className="px-3 py-1.5 text-sm text-white bg-blue-600 hover:bg-blue-700"
+            className="px-3 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 md:px-4 md:py-2.5 md:text-base"
           >
             Add New Record
           </button>
-          <button className="flex items-center gap-0.5 hover:underline">
-            <FaPrint className="size-3" />
-            <p className="text-xs font-bold">Print</p>
-          </button>
+          {records.length != 0 && (
+            <button className="flex items-center gap-0.5 hover:underline text-base md:mr-5">
+              <FaPrint className="size-3 sm:size-4" />
+              <p className="font-bold">Print</p>
+            </button>
+          )}
         </div>
         {records.length === 0 ? (
-          <h1>No Record Available</h1>
+          <div className="flex flex-col items-center justify-center pt-16">
+            <h1 className="text-lg font-bold text-red-500 md:text-xl lg:text-2xl xl:text-3xl">
+              Oops! No Record Available
+            </h1>
+            <img
+              src={noData}
+              alt="No Data Available"
+              className="size-64 md:size-96"
+            />
+          </div>
         ) : (
           <>
-            <div className="flex gap-3 text-xs">
+            <div className="flex gap-3 text-xs sm:text-sm">
               <div>
                 <label htmlFor="item">Month: </label>
                 <select id="item" className="py-0.5 border border-black">
@@ -114,11 +130,11 @@ export default function RecordKeeping() {
 
             {isLoading ? (
               <div className="grid place-items-center h-52">
-                <BiLoader className="size-10 animate-spin" />
+                <BiLoader className="size-10 animate-spin md:size-16" />
               </div>
             ) : (
-              <div className="relative flex flex-col gap-2 overflow-y-scroll max-h-[28rem]">
-                <div className="sticky top-0 left-0 grid p-2 text-xs font-bold bg-zinc-300 grid-cols-tableDefault place-items-center ">
+              <div className="relative flex flex-col gap-2 overflow-y-scroll max-h-[28rem] border border-zinc-400">
+                <div className="sticky top-0 left-0 grid p-2 text-[.80rem] font-bold bg-zinc-300 grid-cols-tableDefault place-items-center sm:text-base md:text-lg md:font-extrabold">
                   <h2>Type</h2>
                   <h2>Weight</h2>
                   <h2>Amount</h2>
@@ -126,41 +142,30 @@ export default function RecordKeeping() {
                   <h2>Action</h2>
                 </div>
                 <div className="divide-y-2 ">
-                  {records.length > 0 &&
-                    records
-                      .sort(
-                        (a, b) =>
-                          Number(b.data.date.split("-").join("")) -
-                          Number(a.data.date.split("-").join(""))
-                      )
-                      .map((record) => (
-                        <TableRow
-                          key={record.id}
-                          type={record.data.type}
-                          weight={record.data.weight}
-                          amount={record.data.amount}
-                          date={new Date(record.data.date)}
-                          onDelete={() => handleDeleteRecord(record.id)}
-                          onEdit={() => handleEditRecord(record.id)}
-                        />
-                      ))}
+                  {records
+                    .sort(
+                      (a, b) =>
+                        Number(b.data.date.split("-").join("")) -
+                        Number(a.data.date.split("-").join(""))
+                    )
+                    .map((record) => (
+                      <TableRow
+                        key={record.id}
+                        type={record.data.type}
+                        weight={record.data.weight}
+                        amount={record.data.amount}
+                        date={new Date(record.data.date)}
+                        onDelete={() => handleDeleteRecord(record.id)}
+                        onEdit={() => handleEditRecord(record.id)}
+                      />
+                    ))}
                 </div>
               </div>
             )}
 
-            <div className="flex flex-wrap justify-center gap-10 pt-5">
-              <div className="p-5 shadow-xl">
-                <h1 className="font-semibold text-center">
-                  Monthly Weight Record
-                </h1>
-                <PieChart data={data} type="ColumnChart" />
-              </div>
-              <div className="p-5 shadow-xl">
-                <h1 className="font-semibold text-center">
-                  Monthly Sales Record
-                </h1>
-                <PieChart data={data} type="PieChart" />
-              </div>
+            <div className="flex flex-wrap items-center justify-center w-full gap-10 pt-10">
+              <DynamicChart type="pie" />
+              <DynamicChart type="bar" />
             </div>
           </>
         )}
@@ -187,48 +192,25 @@ function TableRow({
   onEdit,
 }: TableRowProps) {
   return (
-    <div className="grid py-2 text-[0.70rem] text-center grid-cols-tableDefault place-items-center">
-      <p>{type.charAt(0).toLocaleUpperCase() + type.slice(1)}</p>
+    <div className="grid py-2 text-xs text-center grid-cols-tableDefault place-items-center sm:text-sm md:text-base">
+      <p>{type}</p>
       <p>{weight}kg</p>
       <p>₱{amount}</p>
       <p className="text-center">{date.toDateString()}</p>
-      <div className="flex flex-col gap-1 ">
+      <div className="flex flex-wrap items-center justify-center gap-1 text-zinc-50 md:gap-2">
         <button
-          className="px-1 py-1 text-white bg-yellow-500 hover:bg-yellow-600"
+          className="p-1.5 bg-yellow-500 rounded-sm hover:bg-yellow-600 sm:p-2"
           onClick={onEdit}
         >
-          Edit
+          <FaEdit className="size-3 sm:size-4 " />
         </button>
         <button
-          className="px-1.5 py-1 text-white bg-red-600 hover:bg-red-700"
+          className="p-1.5 bg-red-500 rounded-sm hover:bg-red-700 sm:p-2"
           onClick={onDelete}
         >
-          Delete
+          <RiDeleteBin6Fill className="size-3 sm:size-4 " />
         </button>
       </div>
     </div>
   );
-}
-
-function PieChart({ data, type }) {
-  const options = {
-    vAxis: {
-      title: "Weight in kg",
-      titleTextStyle: { color: "#333", fontSize: 12 },
-      textStyle: { fontSize: 10 },
-    },
-    hAxis: {
-      textStyle: { fontSize: 10 },
-    },
-    legend: {
-      position: "bottom",
-      textStyle: { fontSize: 10 },
-    },
-    chartArea: {
-      width: "80%",
-      height: "70%",
-    },
-  };
-
-  return <Chart chartType={type} data={data} options={options} />;
 }

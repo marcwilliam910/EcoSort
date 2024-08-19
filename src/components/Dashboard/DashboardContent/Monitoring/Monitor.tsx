@@ -3,15 +3,17 @@ import {
   buildStyles,
 } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import metal from "../assets/metal.png";
-import paper from "../assets/paper.png";
-import bottle from "../assets/bottle.png";
+import metal from "../../../../assets/metal.png";
+import paper from "../../../../assets/paper.png";
+import bottle from "../../../../assets/bottle.png";
 import { CgDanger } from "react-icons/cg";
 import { useEffect, useState } from "react";
-import { fetchData } from "../config/firebase";
+import { fetchData } from "../../../../config/firebase";
+import { BiLoader } from "react-icons/bi";
 
 export default function Monitor() {
   const [wasteValues, setWasteValues] = useState<Array<any>>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const images = {
     "Metal Can": metal,
@@ -23,28 +25,35 @@ export default function Monitor() {
     try {
       const result = await fetchData("sensor");
       setWasteValues(result);
+      setIsLoading(false);
     } catch (error) {}
   }
 
   useEffect(() => {
+    setIsLoading(true);
     readMonitor();
     const intervalID = setInterval(() => {
       readMonitor();
     }, 10000);
-
     return () => clearInterval(intervalID);
   }, []);
 
   return (
     <div className="flex flex-wrap justify-center gap-10 p-10 xl:gap-x-14">
-      {wasteValues.map((value) => (
-        <Chart
-          image={images[value.id as keyof typeof images]}
-          val={value.value}
-          name={value.id}
-          key={value.id}
-        />
-      ))}
+      {isLoading ? (
+        <div className="grid place-items-center h-52">
+          <BiLoader className="size-10 animate-spin" />
+        </div>
+      ) : (
+        wasteValues.map((value) => (
+          <Chart
+            image={images[value.id as keyof typeof images]}
+            val={value.data.value}
+            name={value.id}
+            key={value.id}
+          />
+        ))
+      )}
     </div>
   );
 }

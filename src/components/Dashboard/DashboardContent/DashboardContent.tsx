@@ -1,7 +1,7 @@
 import { RiMenu3Line } from "react-icons/ri";
 import { Outlet } from "react-router-dom";
-import yesLogo from "../../assets/yes-o.png";
-import iba from "../../assets/iba-logo.png";
+import yesLogo from "../../../assets/yes-o.png";
+import iba from "../../../assets/iba-logo.png";
 
 interface DashboardContentProps {
   onToggle: () => void;
