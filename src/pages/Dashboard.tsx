@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import SideBar from "../components/Dashboard/SideBar";
 import DashboardContent from "../components/Dashboard/DashboardContent/DashboardContent";
-import { successToast } from "../utils/Toast";
+import { successToast, warningToast } from "../utils/Toast";
 import { ToastContainer } from "react-toastify";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../config/firebase";
+import { auth, messaging, sendPushNotification } from "../config/firebase";
 import { useLocation, useNavigate } from "react-router-dom";
+import { onMessage } from "firebase/messaging";
 
 export default function Dashboard() {
   const [isNavOpen, setIsNavOpen] = useState<boolean>(false);
@@ -32,6 +33,13 @@ export default function Dashboard() {
 
     return () => unsubscribe();
   }, [navigate]);
+
+  useEffect(() => {
+    sendPushNotification();
+    onMessage(messaging, (payload) => {
+      warningToast(payload.notification?.body);
+    });
+  }, []);
 
   return (
     <>

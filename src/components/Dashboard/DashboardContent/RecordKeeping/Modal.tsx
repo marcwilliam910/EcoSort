@@ -65,7 +65,7 @@ export default function Modal({
       <div className="relative w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
         <div className="absolute right-2 top-2 ">
           <IoClose
-            className="font-bold text-red-500 cursor-pointer size-7 lg:size-8"
+            className="font-bold cursor-pointer size-7 lg:size-8"
             onClick={() => setIsModalOpen(false)}
           />
         </div>

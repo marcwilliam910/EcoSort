@@ -14,9 +14,9 @@ export default {
       height: {
         dvh: "100dvh",
       },
-    },
-    gridTemplateColumns: {
-      tableDefault: "1fr 1fr 1fr 1.5fr .75fr",
+      gridTemplateColumns: {
+        tableDefault: "1fr 1fr 1fr 1.5fr .75fr",
+      },
     },
   },
   plugins: [],

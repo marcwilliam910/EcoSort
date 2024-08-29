@@ -7,3 +7,11 @@ export function successToast(message: string) {
     closeOnClick: true,
   });
 }
+
+export function warningToast(message: string = "Error occurred") {
+  toast.error(message, {
+    position: "top-center",
+    autoClose: false,
+    closeOnClick: true,
+  });
+}

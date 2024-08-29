@@ -126,7 +126,7 @@ function LoginForm({
 }: LoginFormProps) {
   return (
     <form
-      className="flex flex-col gap-5 p-5 text-white bg-transparent w-72 backdrop-blur-sm backdrop-brightness-50 lg:py-8 lg:w-80 "
+      className="flex flex-col gap-5 p-5 text-white bg-transparent w-72 backdrop-blur-md backdrop-brightness-50 lg:py-8 lg:w-80 "
       onSubmit={handleLogin}
     >
       <h2 className="mb-2 text-lg font-bold lg:text-xl">

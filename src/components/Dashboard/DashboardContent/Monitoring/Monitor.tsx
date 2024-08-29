@@ -71,7 +71,7 @@ function Chart({ image, val, name }: ChartProps) {
   else style = "#00FF00";
 
   return (
-    <div className="relative flex flex-col items-center w-56 gap-6 p-6 duration-150 shadow-2xl lg:w-60 xl:w-64 hover:scale-105">
+    <div className="relative flex flex-col items-center w-56 gap-6 p-6 duration-150 rounded-lg shadow-2xl bg-zinc-50 lg:w-60 xl:w-64 hover:scale-105">
       {val > 75 && (
         <CgDanger className="absolute text-red-500 right-2 top-2 size-5 animate-ping" />
       )}
