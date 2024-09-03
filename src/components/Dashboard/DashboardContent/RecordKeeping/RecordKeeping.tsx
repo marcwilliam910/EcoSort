@@ -10,6 +10,7 @@ import { RiDeleteBin6Fill } from "react-icons/ri";
 import noData from "../../../../assets/no_data-removebg.png";
 import PDF from "./PDF";
 import { pdf } from "@react-pdf/renderer";
+import SelectComponent from "@/components/shadcn/SelectComponent";
 
 const initalForm = {
   id: "",
@@ -270,9 +271,6 @@ export default function RecordKeeping() {
     URL.revokeObjectURL(url); // Clean up
   }
 
-  console.log(totalWasteSales);
-  console.log(totalWasteWeight);
-
   return (
     <div className="p-5">
       {isModalOpen && (
@@ -320,9 +318,14 @@ export default function RecordKeeping() {
         ) : (
           <>
             <div className="flex gap-3 text-xs sm:text-sm">
-              <div>
+              <div className="flex items-center gap-2">
                 <label htmlFor="item">Month: </label>
-                <select
+                <SelectComponent
+                  value={selectedMonth}
+                  setValue={setSelectedMonth}
+                  data={months}
+                />
+                {/* <select
                   id="item"
                   className="py-0.5 border border-black"
                   value={selectedMonth}
@@ -333,11 +336,16 @@ export default function RecordKeeping() {
                       {month}
                     </option>
                   ))}
-                </select>
+                </select> */}
               </div>
-              <div>
+              <div className="flex items-center gap-2">
                 <label htmlFor="item">Year: </label>
-                <select
+                <SelectComponent
+                  value={selectedYear}
+                  setValue={setSelectedYear}
+                  data={years}
+                />
+                {/* <select
                   id="item"
                   className="py-0.5 border border-black"
                   value={selectedYear}
@@ -348,7 +356,7 @@ export default function RecordKeeping() {
                       {year}
                     </option>
                   ))}
-                </select>
+                </select> */}
               </div>
             </div>
             {isLoading ? (

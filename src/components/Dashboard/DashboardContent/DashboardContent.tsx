@@ -10,7 +10,7 @@ interface DashboardContentProps {
 export default function DashboardContent({ onToggle }: DashboardContentProps) {
   return (
     <>
-      <div className="sticky top-0 left-0 right-0 z-10 flex items-center px-3 py-4 text-white shadow-lg bg-secondary sm:px-4 lg:p-5">
+      <div className="sticky top-0 left-0 right-0 z-10 flex items-center px-3 py-4 text-white shadow-lg bg-[#0A0A0A] sm:px-4 lg:p-5">
         <div className="w-10">
           <RiMenu3Line
             onClick={onToggle}

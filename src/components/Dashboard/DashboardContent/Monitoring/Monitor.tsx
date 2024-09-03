@@ -16,9 +16,9 @@ export default function Monitor() {
   const [isLoading, setIsLoading] = useState(false);
 
   const images = {
-    "Metal Can": metal,
+    Metal: metal,
     Paper: paper,
-    "Plastic Bottle": bottle,
+    Bottle: bottle,
   };
 
   async function readMonitor() {

@@ -76,7 +76,7 @@ const DynamicChart = memo(function DynamicChart({
   console.log("Render for Dynamic Chart");
 
   return (
-    <div className="flex flex-col items-center justify-center sm:min-w-full gap-3 cursor-pointer hover:scale-95 duration-300 py-14 shadow-2xl h-[22rem] px-5 md:w-80 xl:w-96 2xl:w-[29rem] rounded-xl bg-zinc-50">
+    <div className="flex flex-col items-center justify-center sm:min-w-full gap-3 cursor-pointer duration-300 py-14 shadow-2xl h-[22rem] px-5 md:w-80 xl:w-96 2xl:w-[29rem] rounded-xl bg-zinc-50">
       <div>
         <h2 className="font-bold text-gray-600">{month + " " + title}</h2>
       </div>
@@ -159,7 +159,7 @@ export const LineChart = memo(function LineChart({
   }, [recordData]);
 
   return (
-    <div className="flex flex-col items-center justify-center gap-3 py-14 rounded-xl shadow-2xl sm:px-10 sm:py-16 sm:gap-5  md:h-[23rem] lg:h-[25rem] lg:py-16 h-[20rem] sm:h-[22rem] bg-zinc-50 hover:scale-95 cursor-pointer duration-300 sm:col-span-2">
+    <div className="flex flex-col items-center justify-center gap-3 py-14 rounded-xl shadow-2xl sm:px-10 sm:py-16 sm:gap-5  md:h-[23rem] lg:h-[25rem] lg:py-16 h-[20rem] sm:h-[22rem] bg-zinc-50 cursor-pointer duration-300 sm:col-span-2">
       <div>
         <h2 className="font-bold text-gray-600">
           {year} Total {title}

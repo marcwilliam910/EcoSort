@@ -4,6 +4,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { TbHeartRateMonitor } from "react-icons/tb";
 import { auth } from "../../config/firebase";
 import { signOut } from "firebase/auth";
+import { FaRecycle } from "react-icons/fa";
 
 interface SideBarProps {
   onToggle: () => void;
@@ -24,17 +25,18 @@ export default function Sidebar({ onToggle, isNavOpen }: SideBarProps) {
   return (
     <>
       <div
-        className={`fixed top-0 flex flex-col shadow-2xl pt-12 lg:pt-0 shadow-slate-500 items-center w-5/6 h-screen h-dvh  bg-secondary text-white gap-8 transition-all duration-500 ease-in-out z-50 sm:w-2/4 md:w-72 lg:sticky lg:shadow ${
+        className={`fixed top-0 flex flex-col shadow-2xl pt-12 lg:pt-0 shadow-slate-500 items-center w-5/6 h-screen h-dvh bg-[#0A0A0A] text-white gap-8 transition-all duration-500 ease-in-out z-50 sm:w-2/4 md:w-72 lg:sticky lg:shadow ${
           isNavOpen ? "left-0" : "-left-full"
         }`}
       >
         <div className="absolute cursor-pointer top-4 left-3 lg:hidden">
           <MdMenuOpen className="size-7" onClick={onToggle} />
         </div>
-        <h1 className="px-3 py-5 text-2xl font-bold text-green-500 font-title lg:text-3xl">
+        <h1 className="flex flex-col items-center gap-3 px-3 py-5 text-2xl font-bold text-green-500 font-title lg:text-3xl">
           Project Robert
+          <FaRecycle />
         </h1>
-        <ul className="flex flex-col w-full h-full text-lg">
+        <ul className="flex flex-col w-full h-full text-lg mt-11">
           <List loc="/dashboard" name="Monitor" onToggle={onToggle}>
             <TbHeartRateMonitor />
           </List>
