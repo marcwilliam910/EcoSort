@@ -1,8 +1,9 @@
 import React from "react";
-import { MdMenuOpen, MdSaveAs, MdSettings, MdLogout } from "react-icons/md";
+import { MdMenuOpen, MdSaveAs, MdLogout } from "react-icons/md";
+import { IoMdNotifications } from "react-icons/io";
 import { NavLink, useNavigate } from "react-router-dom";
 import { TbHeartRateMonitor } from "react-icons/tb";
-import { auth } from "../../config/firebase";
+import { auth } from "../../firebase config/firebase";
 import { signOut } from "firebase/auth";
 import { FaRecycle } from "react-icons/fa";
 
@@ -33,18 +34,18 @@ export default function Sidebar({ onToggle, isNavOpen }: SideBarProps) {
           <MdMenuOpen className="size-7" onClick={onToggle} />
         </div>
         <h1 className="flex flex-col items-center gap-3 px-3 py-5 text-2xl font-bold text-green-500 font-title lg:text-3xl">
-          Project Robert
+          Project ROBERT
           <FaRecycle />
         </h1>
         <ul className="flex flex-col w-full h-full text-lg mt-11">
-          <List loc="/dashboard" name="Monitor" onToggle={onToggle}>
+          <List loc="/" name="Monitor" onToggle={onToggle}>
             <TbHeartRateMonitor />
           </List>
           <List loc="records" name="Record Keeping" onToggle={onToggle}>
             <MdSaveAs />
           </List>
-          <List loc="settings" name="Settings" onToggle={onToggle}>
-            <MdSettings />
+          <List loc="notification" name="Notification" onToggle={onToggle}>
+            <IoMdNotifications />
           </List>
           <div
             className="flex items-center gap-3 px-5 py-3 mt-auto duration-150 cursor-pointer hover:bg-secondaryHover"

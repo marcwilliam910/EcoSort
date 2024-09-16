@@ -1,32 +1,43 @@
-import {
-  CircularProgressbarWithChildren,
-  buildStyles,
-} from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import metal from "../../../../assets/metal.png";
 import paper from "../../../../assets/paper.png";
 import bottle from "../../../../assets/bottle.png";
-import { CgDanger } from "react-icons/cg";
 import { useEffect, useState } from "react";
-import { fetchData } from "../../../../config/firebase";
+import { fetchData } from "../../../../firebase config/firebaseCRUD";
 import { BiLoader } from "react-icons/bi";
+import Chart from "./Chart";
+
+const displayNames: Names = {
+  Metal: "Metal Can",
+  Paper: "Paper",
+  Bottle: "Plastic Bottle",
+};
+
+interface Names {
+  Metal: string;
+  Paper: string;
+  Bottle: string;
+}
+
+const images = {
+  Metal: metal,
+  Paper: paper,
+  Bottle: bottle,
+};
 
 export default function Monitor() {
   const [wasteValues, setWasteValues] = useState<Array<any>>([]);
   const [isLoading, setIsLoading] = useState(false);
-
-  const images = {
-    Metal: metal,
-    Paper: paper,
-    Bottle: bottle,
-  };
 
   async function readMonitor() {
     try {
       const result = await fetchData("sensor");
       setWasteValues(result);
       setIsLoading(false);
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error in monitoring:", error);
+      setIsLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -39,59 +50,54 @@ export default function Monitor() {
   }, []);
 
   return (
-    <div className="flex flex-wrap justify-center gap-10 p-10 xl:gap-x-14">
+    <div className="flex flex-wrap justify-center gap-16 p-10 xl:gap-x-14">
       {isLoading ? (
         <div className="grid place-items-center h-52">
           <BiLoader className="size-10 animate-spin" />
         </div>
       ) : (
-        wasteValues.map((value) => (
-          <Chart
-            image={images[value.id as keyof typeof images]}
-            val={value.data.value}
-            name={value.id}
-            key={value.id}
-          />
-        ))
+        <>
+          <div className="flex flex-wrap justify-center gap-10 xl:gap-x-14">
+            {wasteValues.map((value) => (
+              <Chart
+                image={images[value.id as keyof typeof images]}
+                val={value.data.value}
+                name={displayNames[value.id as keyof Names]}
+                key={value.id}
+              />
+            ))}
+          </div>
+          <div>
+            <ToggleButton isSmsEnable={true} />
+          </div>
+        </>
       )}
     </div>
   );
 }
 
-interface ChartProps {
-  val: number;
-  image: string;
-  name: string;
+interface ToggleButtonProps {
+  isSmsEnable: boolean;
 }
-
-function Chart({ image, val, name }: ChartProps) {
-  let style;
-  if (val > 75) style = "#FF0000";
-  else if (val > 50) style = "#FFFF00";
-  else style = "#00FF00";
+function ToggleButton({ isSmsEnable }: ToggleButtonProps) {
+  const selectedStyle = "font-bold text-blue-600 border-2 border-blue-600";
 
   return (
-    <div className="relative flex flex-col items-center w-56 gap-6 p-6 duration-150 rounded-lg shadow-2xl bg-zinc-50 lg:w-60 xl:w-64 hover:scale-105">
-      {val > 75 && (
-        <CgDanger className="absolute text-red-500 right-2 top-2 size-5 animate-ping" />
-      )}
-      <CircularProgressbarWithChildren
-        value={val}
-        styles={buildStyles({
-          pathColor: style,
-        })}
+    <div className="flex w-64 text-sm border rounded-lg border-zinc-500 text-zinc-500 sm:w-72 sm:text-base">
+      <button
+        className={`flex-1 p-1.5 rounded-l-lg hover:text-blue-500 ${
+          !isSmsEnable ? selectedStyle : ""
+        }`}
       >
-        <img className="size-20 xl:size-24" src={image} alt="trash bin" />
-        <div>
-          <strong>{val > 100 ? "100" : val}%</strong> full
-        </div>
-      </CircularProgressbarWithChildren>
-      <div className="flex flex-col items-center gap-2">
-        <p className="text-sm text-gray-500">
-          {val > 75 ? "High" : val > 50 ? "Medium" : "Low"} waste level
-        </p>
-        <h1 className="text-xl font-extrabold">{name}</h1>
-      </div>
+        Manual
+      </button>
+      <button
+        className={`flex-1 p-1.5 rounded-r-lg hover:text-blue-500 ${
+          isSmsEnable ? selectedStyle : ""
+        }`}
+      >
+        Text Message
+      </button>
     </div>
   );
 }

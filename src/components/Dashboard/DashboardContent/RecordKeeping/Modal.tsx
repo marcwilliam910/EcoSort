@@ -1,21 +1,21 @@
 import { IoClose } from "react-icons/io5";
-import { addData, updateData } from "../../../../config/firebase";
+import { addData, updateData } from "../../../../firebase config/firebaseCRUD";
 import { useState } from "react";
 import { successAlert, errorAlert } from "../../../../utils/SweetAlerts";
 import { BiLoader } from "react-icons/bi";
 
 interface ModalProps {
-  setIsModalOpen: (isModalOpen: boolean) => void;
+  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   readRecord: () => void;
-  isEditing: any;
+  isEditing: boolean;
   formData: FormData;
-  setFormData: (data: FormData) => void;
+  setFormData: React.Dispatch<React.SetStateAction<FormData>>;
 }
 
 interface FormData {
   id: string;
   data: {
-    type: string;
+    type: "Paper" | "Metal Can" | "Plastic Bottle";
     weight: string;
     amount: string;
     date: string;
@@ -31,7 +31,7 @@ export default function Modal({
 }: ModalProps) {
   const [isLoading, setisLoading] = useState<boolean>(false);
 
-  function handleFormChange(e: any) {
+  function handleFormChange(e: React.ChangeEvent<HTMLSelectElement>) {
     setFormData({
       ...formData,
       data: {
@@ -41,7 +41,7 @@ export default function Modal({
     });
   }
 
-  async function handleSubmit(e: any) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     try {
       setisLoading(true);
@@ -77,7 +77,7 @@ export default function Modal({
             <Label html="type" value="Waste type" />
             <select
               id="type"
-              className="block w-full p-2 mt-1 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="block w-full p-2 mt-1 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 md:text-base"
               defaultValue={formData.data.type}
               onChange={handleFormChange}
             >
@@ -116,6 +116,7 @@ export default function Modal({
               id="date"
               onChange={handleFormChange}
               value={formData.data.date}
+              max={new Date().toISOString().split("T")[0]}
             />
           </div>
 
@@ -147,16 +148,18 @@ interface InputProps {
   id: string;
   onChange: (e: any) => void;
   value: string;
+  max?: string;
 }
-function Input({ type, id, onChange, value }: InputProps) {
+function Input({ type, id, onChange, value, max }: InputProps) {
   return (
     <input
       type={type}
       id={id}
       required
-      className="block w-full p-2 mt-1 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+      className="block w-full p-2 mt-1 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 md:text-base"
       onChange={onChange}
       value={value}
+      {...(type === "date" ? { max } : {})}
     />
   );
 }
@@ -168,7 +171,10 @@ interface LabelProps {
 
 function Label({ html, value }: LabelProps) {
   return (
-    <label htmlFor={html} className="block text-sm font-medium text-gray-700">
+    <label
+      htmlFor={html}
+      className="block text-sm font-medium text-gray-700 md:text-base"
+    >
       {value}
     </label>
   );

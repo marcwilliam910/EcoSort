@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import digitalized from "../assets/digitalized.jpg";
 import logo from "../assets/logo.png";
-import { auth } from "../config/firebase";
+import { auth } from "../firebase config/firebase";
 import {
   browserLocalPersistence,
   browserSessionPersistence,
@@ -28,7 +28,7 @@ export default function Login() {
   const [isResetting, setIsResetting] = useState<boolean>(false);
   const [isChecked, setIsChecked] = useState<boolean>(false);
 
-  function handleUserForm(e: { target: { name: any; value: any } }) {
+  function handleUserForm(e: { target: { name: string; value: string } }) {
     setUserForm({ ...userForm, [e.target.name]: e.target.value });
   }
 
@@ -42,7 +42,7 @@ export default function Login() {
       );
       await signInWithEmailAndPassword(auth, userForm.email, userForm.password);
 
-      navigate("/dashboard", {
+      navigate("/", {
         replace: true,
         state: {
           fromLogin: true,

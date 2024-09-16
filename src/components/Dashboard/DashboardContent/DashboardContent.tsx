@@ -1,6 +1,6 @@
 import { RiMenu3Line } from "react-icons/ri";
 import { Outlet } from "react-router-dom";
-import yesLogo from "../../../assets/yes.png";
+import yesLogo from "../../../../src/assets/yes_o_logo.png";
 import iba from "../../../assets/iba-logo.png";
 
 interface DashboardContentProps {
@@ -17,10 +17,10 @@ export default function DashboardContent({ onToggle }: DashboardContentProps) {
             className="cursor-pointer lg:hidden size-6"
           />
         </div>
-        <h1 className="flex-1 text-lg font-bold text-center sm:text-xl md:text-2xl lg:text-3xl ">
-          Waste Monitoring
+        <h1 className="flex-1 text-lg font-bold text-center sm:text-xl md:text-2xl lg:text-[1.7rem] ">
+          EcoSort
         </h1>
-        <div className="flex gap-1 lg:gap-3">
+        <div className="flex gap-1">
           <img
             src={yesLogo}
             alt="Yes-O logo"

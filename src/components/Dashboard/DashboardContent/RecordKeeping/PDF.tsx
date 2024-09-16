@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
   },
   tableHeader: {
     fontSize: 14,
-    backgroundColor: "gray",
+    backgroundColor: "#22C55E",
     color: "white",
     flex: 1,
     textAlign: "center",

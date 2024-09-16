@@ -13,3 +13,16 @@ firebase.initializeApp({
 });
 
 const messaging = firebase.messaging();
+
+messaging.onBackgroundMessage((payload) => {
+  console.log(
+    "[firebase-messaging-sw.js] Received background message:",
+    payload.notification
+  );
+  const notificationTitle = payload.notification.title;
+  const notificationBody = {
+    body: payload.notification.body,
+  };
+
+  self.registration.showNotification(notificationTitle, notificationBody);
+});

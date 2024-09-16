@@ -3,28 +3,17 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Monitor from "./components/Dashboard/DashboardContent/Monitoring/Monitor";
 import RecordKeeping from "./components/Dashboard/DashboardContent/RecordKeeping/RecordKeeping";
-import Settings from "./components/Settings";
+import Notification from "./components/Notification/Notification";
+import Error from "./pages/Error";
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    index: true,
-    element: <Login />,
-  },
-  {
-    path: "/login",
-    element: <Login />,
-  },
-  {
-    path: "/dashboard",
     element: <Dashboard />,
+    errorElement: <Error />,
     children: [
       {
         index: true,
-        element: <Monitor />,
-      },
-      {
-        path: "monitor",
         element: <Monitor />,
       },
       {
@@ -32,9 +21,14 @@ export const router = createBrowserRouter([
         element: <RecordKeeping />,
       },
       {
-        path: "settings",
-        element: <Settings />,
+        path: "notification",
+        element: <Notification />,
       },
     ],
+  },
+  {
+    path: "/login",
+    element: <Login />,
+    errorElement: <Error />,
   },
 ]);

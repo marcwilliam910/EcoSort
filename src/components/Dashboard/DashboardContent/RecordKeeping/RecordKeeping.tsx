@@ -1,6 +1,9 @@
 import { useEffect, useState, memo, useCallback } from "react";
 import Modal from "./Modal";
-import { deleteData, fetchData } from "../../../../config/firebase";
+import {
+  deleteData,
+  fetchData,
+} from "../../../../firebase config/firebaseCRUD";
 import { deleteAlert, errorAlert } from "../../../../utils/SweetAlerts";
 import DynamicChart, { LineChart } from "./Charts";
 import { FaPrint } from "react-icons/fa";
@@ -12,10 +15,10 @@ import PDF from "./PDF";
 import { pdf } from "@react-pdf/renderer";
 import SelectComponent from "@/components/shadcn/SelectComponent";
 
-const initalForm = {
+const initalForm: Record = {
   id: "",
   data: {
-    type: "",
+    type: "Paper", // edit this
     weight: "",
     amount: "",
     date: "",
@@ -24,7 +27,7 @@ const initalForm = {
 
 interface RecordData {
   amount: string;
-  date: string; // or Date if you’re using Date objects
+  date: string;
   type: "Paper" | "Metal Can" | "Plastic Bottle";
   weight: string;
 }
@@ -67,13 +70,13 @@ const monthNames = [
 
 export default function RecordKeeping() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [records, setRecords] = useState<Array<Record>>([]);
+  const [records, setRecords] = useState<Record[]>([]);
+  const [recordToShow, setRecordToShow] = useState<Record[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState(initalForm);
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [months, setMonths] = useState<Array<string>>([]);
-  const [years, setYears] = useState<Array<string>>([]);
-  const [recordToShow, setRecordToShow] = useState<Array<Record>>([]);
+  const [months, setMonths] = useState<string[]>([]);
+  const [years, setYears] = useState<string[]>([]);
   const [selectedMonth, setSelectedMonth] = useState<string>(
     monthNames[new Date().getMonth()]
   );
@@ -84,8 +87,6 @@ export default function RecordKeeping() {
   const [totalWasteWeight, setTotalWasteWeight] = useState<ChartData[]>([]);
   const [yearlySalesData, setYearlySalesData] = useState<YearlyData[]>([]);
   const [yearlyWeightData, setYearlyWeightData] = useState<YearlyData[]>([]);
-
-  console.log("Render for Record Keeping");
 
   useEffect(() => {
     if (selectedYear === new Date().getFullYear().toString()) {
@@ -106,15 +107,15 @@ export default function RecordKeeping() {
 
   useEffect(() => {
     // console.log(selectedYear, selectedMonth);
-    let yearlySales: YearlyData[] = [];
-    let yearlyWeight: YearlyData[] = [];
+    const yearlySales: YearlyData[] = [];
+    const yearlyWeight: YearlyData[] = [];
     const values: YearlyDataValues = {
       Paper: 0,
       "Metal Can": 0,
       "Plastic Bottle": 0,
     };
 
-    let currentDataRecords: Record[] = [];
+    const currentDataRecords: Record[] = [];
     const monthSet = new Set<string>();
     const yearSet = new Set<string>();
 
@@ -226,7 +227,6 @@ export default function RecordKeeping() {
 
   const handleDeleteRecord = useCallback(async (id: string) => {
     const permission = await deleteAlert();
-
     if (permission) {
       try {
         await deleteData("records", id);
@@ -250,7 +250,7 @@ export default function RecordKeeping() {
       setFormData(editRecord);
       setIsModalOpen(true);
     } else {
-      errorAlert("No record found");
+      errorAlert("Something went wrong! No record found");
     }
   }, []);
 
@@ -364,7 +364,7 @@ export default function RecordKeeping() {
                 <BiLoader className="size-10 animate-spin md:size-16" />
               </div>
             ) : (
-              <div className="relative flex flex-col gap-2 overflow-y-scroll max-h-[28rem] border border-zinc-400 bg-zinc-50">
+              <div className="relative flex flex-col overflow-y-auto max-h-[28rem] border border-zinc-400 bg-zinc-50">
                 <div className="sticky top-0 left-0 grid p-2 text-[.80rem] font-bold bg-green-500 text-white grid-cols-tableDefault place-items-center sm:text-base md:text-lg md:font-extrabold">
                   <h2>Type</h2>
                   <h2>Weight</h2>
@@ -386,8 +386,9 @@ export default function RecordKeeping() {
                         weight={record.data.weight}
                         amount={record.data.amount}
                         date={new Date(record.data.date).toDateString()}
-                        onDelete={() => handleDeleteRecord(record.id)}
-                        onEdit={() => handleEditRecord(record.id)}
+                        onDelete={handleDeleteRecord}
+                        onEdit={handleEditRecord}
+                        id={record.id}
                       />
                     ))}
                 </div>
@@ -426,14 +427,14 @@ export default function RecordKeeping() {
     </div>
   );
 }
-
 interface TableRowProps {
   type: string;
   weight: string;
   date: string;
   amount: string;
-  onDelete: () => void;
-  onEdit: () => void;
+  onDelete: (id: string) => void; // Now accepts an id as a parameter
+  onEdit: (id: string) => void; // Now accepts an id as a parameter
+  id: string;
 }
 
 const TableRow = memo(function TableRow({
@@ -443,11 +444,12 @@ const TableRow = memo(function TableRow({
   amount,
   onDelete,
   onEdit,
+  id,
 }: TableRowProps) {
   console.log("Render for TableRow");
 
   return (
-    <div className="grid py-2 text-xs text-center grid-cols-tableDefault place-items-center sm:text-sm md:text-base">
+    <div className="grid py-2 text-xs text-center duration-150 grid-cols-tableDefault place-items-center sm:text-sm md:text-base hover:bg-zinc-200">
       <p>{type}</p>
       <p>{weight}kg</p>
       <p>₱{amount}</p>
@@ -455,13 +457,13 @@ const TableRow = memo(function TableRow({
       <div className="flex flex-wrap items-center justify-center gap-1 text-zinc-50 md:gap-2">
         <button
           className="p-1.5 bg-yellow-500 rounded-sm hover:bg-yellow-600 sm:p-2"
-          onClick={onEdit}
+          onClick={() => onEdit(id)}
         >
           <FaEdit className="size-3 sm:size-4 " />
         </button>
         <button
           className="p-1.5 bg-red-500 rounded-sm hover:bg-red-700 sm:p-2"
-          onClick={onDelete}
+          onClick={() => onDelete(id)}
         >
           <RiDeleteBin6Fill className="size-3 sm:size-4 " />
         </button>

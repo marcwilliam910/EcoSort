@@ -1,5 +1,5 @@
 import { sendPasswordResetEmail } from "firebase/auth";
-import { auth } from "../../config/firebase";
+import { auth } from "../../firebase config/firebase";
 import { useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 
