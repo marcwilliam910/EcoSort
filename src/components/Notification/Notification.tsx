@@ -1,31 +1,88 @@
-import {fetchSingleDocument, updateData} from "@/firebase config/firebaseCRUD";
+import {
+  deleteData,
+  fetchData,
+  fetchSingleDocument,
+  updateData,
+  updateSingleData,
+} from "@/firebase config/firebaseCRUD";
 import {warningToast} from "@/utils/Toast";
 import {memo, useEffect, useState} from "react";
-import {BiLoader} from "react-icons/bi";
+// import {BiLoader} from "react-icons/bi";
 import {MdNotificationsOff, MdNotificationsActive} from "react-icons/md";
 import {Switch} from "@/components/ui/switch";
 import {FaEdit} from "react-icons/fa";
 import {RiDeleteBin6Fill} from "react-icons/ri";
-import {httpsCallable} from "firebase/functions";
-import {functions} from "@/firebase config/firebase";
+// import {httpsCallable} from "firebase/functions";
+// import {functions} from "@/firebase config/firebase";
+import Modal from "../shared/Modal";
+import {deleteAlert, errorAlert} from "@/utils/SweetAlerts";
+import Label from "../shared/Label";
+import Input from "../shared/Input";
 
-const dummyData = [
-  {id: "1", name: "Jayvee Sucal", number: "09653410782", isEnabled: false},
-  {id: "2", name: "John Loyd", number: "09876543210", isEnabled: true},
-  {id: "3", name: "Emma Witson", number: "09098765432", isEnabled: false},
-  {id: "4", name: "Michael Jordan", number: "09123456789", isEnabled: true},
-  {id: "5", name: "Sarah Pascual", number: "09345678901", isEnabled: false},
-  {id: "6", name: "Daniel Padilla", number: "09456789012", isEnabled: true},
-];
+// const dummyData = [
+//   {id: "1", name: "Jayvee Sucal", number: "09653410782", isEnabled: false},
+//   {id: "2", name: "John Loyd", number: "09876543210", isEnabled: true},
+//   {id: "3", name: "Emma Witson", number: "09098765432", isEnabled: false},
+//   {id: "4", name: "Michael Jordan", number: "09123456789", isEnabled: true},
+//   {id: "5", name: "Sarah Pascual", number: "09345678901", isEnabled: false},
+//   {id: "6", name: "Daniel Padilla", number: "09456789012", isEnabled: true},
+// ];
 
 // interface SemaphoreResponse {
 //   balance: number;
 // }
 
+const initalForm = {
+  id: "",
+  data: {
+    isEnabled: false,
+    name: "",
+    number: "",
+  },
+};
+
+interface Contact {
+  id: string;
+  data: ContactData;
+}
+
+interface ContactData {
+  isEnabled: boolean;
+  name: string;
+  number: string;
+}
+
 export default function Notification() {
   const [isSmsEnabled, setIsSmsEnabled] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [smsBalance, setSmsBalance] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [formData, setFormData] = useState(initalForm);
+
+  const modalFormInputs = [
+    {
+      label: {html: "name", value: "Name"},
+      input: {
+        type: "text",
+        id: "name",
+        onChange: handleFormChangeInModal,
+        value: formData.data.name,
+      },
+    },
+    {
+      label: {html: "number", value: "Phone Number"},
+      input: {
+        type: "tel",
+        id: "number",
+        onChange: handleFormChangeInModal,
+        value: formData.data.number,
+        pattern: "09[0-9]{9}",
+        placeholder: "ex. 09123456789",
+      },
+    },
+  ];
 
   async function getNotificationPermission() {
     try {
@@ -56,6 +113,41 @@ export default function Notification() {
     }
   }
 
+  async function readRecord() {
+    try {
+      const recordArray = await fetchData<ContactData>("contacts");
+      setContacts(recordArray);
+    } catch (error) {
+      errorAlert("Failed to fetch records");
+    } finally {
+    }
+  }
+
+  async function handleDelete(id: string) {
+    const permission = await deleteAlert();
+    if (permission) {
+      try {
+        await deleteData("contacts", id);
+        readRecord();
+      } catch (error) {
+        errorAlert("Failed to delete record");
+      }
+    }
+  }
+
+  function handleEdit(id: string) {
+    const editRecord: Contact | undefined = contacts.find(
+      (contact) => contact.id === id
+    );
+    if (editRecord) {
+      setIsEditing(true);
+      setFormData(editRecord);
+      setIsModalOpen(true);
+    } else {
+      errorAlert("Something went wrong! No record found");
+    }
+  }
+
   // async function getSmsBalance() {
   //   try {
   //     // Specify the response type as SemaphoreResponse
@@ -75,13 +167,42 @@ export default function Notification() {
   //   getSmsBalance();
   // }, []);
 
+  function handleFormChangeInModal(e: React.ChangeEvent<HTMLSelectElement>) {
+    setFormData({
+      ...formData,
+      data: {
+        ...formData.data,
+        [e.target.id]: e.target.value,
+      },
+    });
+  }
+
+  async function handleSwitchChange(id: string) {
+    const contact: Contact | undefined = contacts.find(
+      (contact) => contact.id === id
+    );
+
+    try {
+      if (contact) {
+        await updateSingleData("contacts", id, {
+          isEnabled: !contact.data.isEnabled,
+        });
+        readRecord();
+      }
+    } catch (error) {
+      errorAlert("Error updating");
+
+      console.log(error);
+    }
+  }
+
   useEffect(() => {
     getNotificationPermission();
   }, []);
 
-  function handleDelete(id: string) {}
-
-  function handleEdit(id: string) {}
+  useEffect(() => {
+    readRecord();
+  }, []);
 
   // if (loading) {
   //   return (
@@ -93,6 +214,25 @@ export default function Notification() {
 
   return (
     <div className="flex justify-center px-4 py-8">
+      {isModalOpen && (
+        <Modal<ContactData>
+          readRecord={readRecord}
+          isEditing={isEditing}
+          setIsModalOpen={setIsModalOpen}
+          formData={formData}
+          title="Contact"
+          collectionName="contacts"
+        >
+          {modalFormInputs.map((item) => {
+            return (
+              <div key={item.label.value}>
+                <Label {...item.label} />
+                <Input {...item.input} />
+              </div>
+            );
+          })}
+        </Modal>
+      )}
       <div className="flex flex-col items-center w-full gap-6">
         <div
           className={`relative flex items-center p-3 space-x-4 border rounded-full shadow-xl cursor-pointer border-black/20 bg-zinc-300${
@@ -126,21 +266,33 @@ export default function Notification() {
               <h2 className="text-center">Send SMS</h2>
             </div>
             <div className="divide-y-2 ">
-              {dummyData.map((data) => (
+              {contacts.map((contact) => (
                 <TableRow
-                  key={data.id}
-                  name={data.name}
-                  number={data.number}
-                  isEnabled={data.isEnabled}
+                  key={contact.id}
+                  name={contact.data.name}
+                  number={contact.data.number}
+                  isSwitchEnabled={contact.data.isEnabled}
                   onDelete={handleDelete}
                   onEdit={handleEdit}
-                  id={data.id}
+                  id={contact.id}
+                  onSwitchChange={handleSwitchChange}
+                  isSmsEnabled={isSmsEnabled}
                 />
               ))}
             </div>
           </div>
           <div className="flex justify-between w-full sm:pr-3">
-            <button className="px-3 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 md:px-4 md:py-2.5 md:text-base">
+            <button
+              className={`px-3 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 md:px-4 md:py-2.5 md:text-base ${
+                !isSmsEnabled ? "cursor-not-allowed" : "cursor-pointer"
+              }`}
+              onClick={() => {
+                setIsEditing(false);
+                setFormData(initalForm);
+                setIsModalOpen(true);
+              }}
+              disabled={!isSmsEnabled}
+            >
               Add Contact
             </button>
             <p className="text-xs text-gray-500">{smsBalance} messages left</p>
@@ -154,19 +306,23 @@ export default function Notification() {
 interface TableRowProps {
   name: string;
   number: string;
-  isEnabled: boolean;
+  isSwitchEnabled: boolean;
   onDelete: (id: string) => void;
   onEdit: (id: string) => void;
   id: string;
+  onSwitchChange: (id: string) => Promise<void>;
+  isSmsEnabled: boolean;
 }
 
 const TableRow = memo(function TableRow({
   name,
   number,
-  isEnabled,
+  isSwitchEnabled,
   onDelete,
   onEdit,
   id,
+  onSwitchChange,
+  isSmsEnabled,
 }: TableRowProps) {
   return (
     <div className="grid grid-cols-4 py-2 text-xs text-center duration-150 place-items-center sm:text-sm md:text-base hover:bg-zinc-200">
@@ -174,19 +330,29 @@ const TableRow = memo(function TableRow({
       <p>{number}</p>
       <div className="flex flex-wrap items-center justify-center gap-0.5 text-zinc-50 md:gap-2">
         <button
-          className="p-1.5 bg-yellow-500 rounded-sm hover:bg-yellow-600 sm:p-2"
+          className={`p-1.5 bg-yellow-500 rounded-sm hover:bg-yellow-600 sm:p-2 ${
+            !isSmsEnabled ? "cursor-not-allowed" : "cursor-pointer"
+          }`}
           onClick={() => onEdit(id)}
+          disabled={!isSmsEnabled}
         >
           <FaEdit className="size-3 sm:size-4 " />
         </button>
         <button
-          className="p-1.5 bg-red-500 rounded-sm hover:bg-red-700 sm:p-2"
+          className={`p-1.5 bg-red-500 rounded-sm hover:bg-red-700 sm:p-2 ${
+            !isSmsEnabled ? "cursor-not-allowed" : "cursor-pointer"
+          }`}
           onClick={() => onDelete(id)}
+          disabled={!isSmsEnabled}
         >
           <RiDeleteBin6Fill className="size-3 sm:size-4 " />
         </button>
       </div>
-      <Switch checked={isEnabled} />
+      <Switch
+        checked={isSwitchEnabled}
+        onCheckedChange={() => onSwitchChange(id)}
+        disabled={!isSmsEnabled}
+      />
     </div>
   );
 });

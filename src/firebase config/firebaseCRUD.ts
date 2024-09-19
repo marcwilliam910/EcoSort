@@ -3,17 +3,20 @@ import {
   collection,
   deleteDoc,
   doc,
+  DocumentData,
   getDoc,
   getDocs,
   setDoc,
+  updateDoc,
+  WithFieldValue,
 } from "firebase/firestore";
-import { db } from "./firebase";
+import {db} from "./firebase";
 
-export async function fetchData(collectionName: string) {
+export async function fetchData<T>(collectionName: string) {
   const querySnapshot = await getDocs(collection(db, collectionName));
   const recordArray = querySnapshot.docs.map((doc) => ({
     id: doc.id,
-    data: doc.data() as RecordData,
+    data: doc.data() as T,
   }));
   return recordArray;
 }
@@ -22,7 +25,10 @@ export async function deleteData(collectionName: string, id: string) {
   await deleteDoc(doc(db, collectionName, id));
 }
 
-export async function addData(collectionName: string, formData: RecordData) {
+export async function addData<T extends DocumentData>(
+  collectionName: string,
+  formData: WithFieldValue<T>
+) {
   await addDoc(collection(db, collectionName), formData);
 }
 
@@ -33,13 +39,6 @@ export async function updateData(
 ) {
   const recordRef = doc(db, collectionName, id);
   await setDoc(recordRef, formData);
-}
-
-interface RecordData {
-  amount: string;
-  date: string;
-  type: "Paper" | "Metal Can" | "Plastic Bottle";
-  weight: string;
 }
 
 // for fetchSms
@@ -79,4 +78,13 @@ export async function fetchSingleDocument(
   if (docSnap.exists()) {
     return docSnap.data().isEnabled;
   }
+}
+
+export async function updateSingleData(
+  collectionName: string,
+  id: string,
+  data: any
+) {
+  const documentRef = doc(db, collectionName, id);
+  await updateDoc(documentRef, data);
 }

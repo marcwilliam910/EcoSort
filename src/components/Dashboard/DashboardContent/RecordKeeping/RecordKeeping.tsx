@@ -1,19 +1,18 @@
-import { useEffect, useState, memo, useCallback } from "react";
-import Modal from "./Modal";
-import {
-  deleteData,
-  fetchData,
-} from "../../../../firebase config/firebaseCRUD";
-import { deleteAlert, errorAlert } from "../../../../utils/SweetAlerts";
-import DynamicChart, { LineChart } from "./Charts";
-import { FaPrint } from "react-icons/fa";
-import { BiLoader } from "react-icons/bi";
-import { FaEdit } from "react-icons/fa";
-import { RiDeleteBin6Fill } from "react-icons/ri";
+import {useEffect, useState, memo, useCallback} from "react";
+import {deleteData, fetchData} from "../../../../firebase config/firebaseCRUD";
+import {deleteAlert, errorAlert} from "../../../../utils/SweetAlerts";
+import DynamicChart, {LineChart} from "./Charts";
+import {FaPrint} from "react-icons/fa";
+import {BiLoader} from "react-icons/bi";
+import {FaEdit} from "react-icons/fa";
+import {RiDeleteBin6Fill} from "react-icons/ri";
 import noData from "../../../../assets/no_data-removebg.png";
 import PDF from "./PDF";
-import { pdf } from "@react-pdf/renderer";
+import {pdf} from "@react-pdf/renderer";
 import SelectComponent from "@/components/shadcn/SelectComponent";
+import Label from "@/components/shared/Label";
+import Input from "@/components/shared/Input";
+import Modal from "@/components/shared/Modal";
 
 const initalForm: Record = {
   id: "",
@@ -88,6 +87,51 @@ export default function RecordKeeping() {
   const [yearlySalesData, setYearlySalesData] = useState<YearlyData[]>([]);
   const [yearlyWeightData, setYearlyWeightData] = useState<YearlyData[]>([]);
 
+  const modalFormInputs = [
+    {
+      label: {html: "select", value: "Waste Type"},
+      input: {
+        id: "type",
+        type: "select",
+        options: [
+          {label: "Paper", value: "Paper"},
+          {label: "Metal Can", value: "Metal Can"},
+          {label: "Plastic Bottle", value: "Plastic Bottle"},
+        ],
+        onChange: handleFormChangeInModal,
+        value: formData.data.type,
+      },
+    },
+    {
+      label: {html: "amount", value: "Amount"},
+      input: {
+        type: "number",
+        id: "amount",
+        onChange: handleFormChangeInModal,
+        value: formData.data.amount,
+      },
+    },
+    {
+      label: {html: "date", value: "Date"},
+      input: {
+        type: "date",
+        id: "date",
+        onChange: handleFormChangeInModal,
+        value: formData.data.date,
+        max: new Date().toISOString().split("T")[0],
+      },
+    },
+    {
+      label: {html: "weight", value: "Weight in kg"},
+      input: {
+        type: "number",
+        id: "weight",
+        onChange: handleFormChangeInModal,
+        value: formData.data.weight,
+      },
+    },
+  ];
+
   useEffect(() => {
     if (selectedYear === new Date().getFullYear().toString()) {
       setSelectedMonth(monthNames[new Date().getMonth()]);
@@ -120,7 +164,7 @@ export default function RecordKeeping() {
     const yearSet = new Set<string>();
 
     records.forEach((record) => {
-      const { amount, weight, type, date: dateStr }: RecordData = record.data;
+      const {amount, weight, type, date: dateStr}: RecordData = record.data;
 
       const date: Date = new Date(dateStr);
       const month: string = monthNames[date.getMonth()];
@@ -140,11 +184,11 @@ export default function RecordKeeping() {
         } else {
           yearlySales.push({
             month,
-            values: { ...values, [type]: Number(amount) },
+            values: {...values, [type]: Number(amount)},
           });
           yearlyWeight.push({
             month,
-            values: { ...values, [type]: Number(weight) },
+            values: {...values, [type]: Number(weight)},
           });
         }
 
@@ -183,18 +227,18 @@ export default function RecordKeeping() {
 
   useEffect(() => {
     const initialSales = [
-      { label: "Metal Can", value: 0 },
-      { label: "Plastic Bottle", value: 0 },
-      { label: "Paper", value: 0 },
+      {label: "Metal Can", value: 0},
+      {label: "Plastic Bottle", value: 0},
+      {label: "Paper", value: 0},
     ];
     const initalWeight = [
-      { label: "Metal Can", value: 0 },
-      { label: "Plastic Bottle", value: 0 },
-      { label: "Paper", value: 0 },
+      {label: "Metal Can", value: 0},
+      {label: "Plastic Bottle", value: 0},
+      {label: "Paper", value: 0},
     ];
 
     recordToShow.forEach((record) => {
-      const { type, weight, amount } = record.data;
+      const {type, weight, amount} = record.data;
 
       initialSales.forEach((item) => {
         if (item.label === type) {
@@ -216,7 +260,7 @@ export default function RecordKeeping() {
   async function readRecord() {
     try {
       setIsLoading(true);
-      const recordArray = await fetchData("records");
+      const recordArray = await fetchData<RecordData>("records");
       setRecords(recordArray);
     } catch (error) {
       errorAlert("Failed to fetch records");
@@ -241,18 +285,21 @@ export default function RecordKeeping() {
     }
   }, []);
 
-  const handleEditRecord = useCallback(async (id: string) => {
-    const editRecord: Record | undefined = records.find(
-      (record) => record.id === id
-    );
-    if (editRecord) {
-      setIsEditing(true);
-      setFormData(editRecord);
-      setIsModalOpen(true);
-    } else {
-      errorAlert("Something went wrong! No record found");
-    }
-  }, []);
+  const handleEditRecord = useCallback(
+    (id: string) => {
+      const editRecord: Record | undefined = records.find(
+        (record) => record.id === id
+      );
+      if (editRecord) {
+        setIsEditing(true);
+        setFormData(editRecord);
+        setIsModalOpen(true);
+      } else {
+        errorAlert("Something went wrong! No record found");
+      }
+    },
+    [records]
+  );
 
   async function downloadPdf() {
     const flattenedData = recordToShow.map((record) => record.data);
@@ -271,16 +318,38 @@ export default function RecordKeeping() {
     URL.revokeObjectURL(url); // Clean up
   }
 
+  function handleFormChangeInModal(e: React.ChangeEvent<HTMLSelectElement>) {
+    setFormData({
+      ...formData,
+      data: {
+        ...formData.data,
+        [e.target.id]: e.target.value,
+      },
+    });
+  }
+
   return (
     <div className="p-5">
       {isModalOpen && (
-        <Modal
+        <Modal<RecordData>
           setIsModalOpen={setIsModalOpen}
           readRecord={readRecord}
           formData={formData}
-          setFormData={setFormData}
           isEditing={isEditing}
-        />
+          title="Record"
+          collectionName="records"
+        >
+          <>
+            {modalFormInputs.map((item) => {
+              return (
+                <div key={item.input.id}>
+                  <Label {...item.label} />
+                  <Input {...item.input} />
+                </div>
+              );
+            })}
+          </>
+        </Modal>
       )}
       <div className="space-y-5 ">
         <div className="flex items-end justify-between">

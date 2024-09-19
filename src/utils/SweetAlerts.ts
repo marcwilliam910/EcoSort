@@ -12,7 +12,7 @@ export function successAlert(message: string) {
 export function errorAlert(message: string) {
   Swal.fire({
     icon: "error",
-    timer: 2000,
+    timer: 2500,
     title: message,
     showConfirmButton: false,
   });
