@@ -1,41 +1,48 @@
-import { RiMenu3Line } from "react-icons/ri";
-import { Outlet } from "react-router-dom";
+import {RiMenu3Line} from "react-icons/ri";
+import {Outlet} from "react-router-dom";
 import yesLogo from "../../../../src/assets/yes_o_logo.png";
 import iba from "../../../assets/iba-logo.png";
+import {FaRegMoon} from "react-icons/fa";
+import {MdOutlineLightMode} from "react-icons/md";
+
+import SemaphoreContextProvider from "@/contexts/SemaphoreContextProvider";
+import {ThemeContext} from "@/contexts/ThemeContextProvider";
+import {useContext} from "react";
 
 interface DashboardContentProps {
-  onToggle: () => void;
+  onToggleNav: () => void;
 }
 
-export default function DashboardContent({ onToggle }: DashboardContentProps) {
+export default function DashboardContent({onToggleNav}: DashboardContentProps) {
+  const {isDarkMode, toggleTheme} = useContext(ThemeContext);
+
   return (
     <>
-      <div className="sticky top-0 left-0 right-0 z-10 flex items-center px-3 py-4 text-white shadow-lg bg-[#0A0A0A] sm:px-4 lg:p-5">
-        <div className="w-10">
+      <div className="sticky top-0 left-0 right-0 z-10 flex items-center px-3 py-3.5 dark:bg-dark-card dark:border-none dark:shadow-lg sm:px-4 lg:p-5 bg-light-card shadow-md dark:text-dark-text text-light-text transition-all duration-150">
+        <div className="w-8">
           <RiMenu3Line
-            onClick={onToggle}
+            onClick={onToggleNav}
             className="cursor-pointer lg:hidden size-6"
           />
         </div>
-        <h1 className="flex-1 text-lg font-bold text-center sm:text-xl md:text-2xl lg:text-[1.7rem] ">
+        <h1 className="flex-1 text-lg font-bold text-center sm:text-xl md:text-2xl lg:text-2xl dark:text-dark-primary text-light-primary">
           EcoSort
         </h1>
-        <div className="flex gap-1">
-          <img
-            src={yesLogo}
-            alt="Yes-O logo"
-            className="object-cover size-6 sm:size-8"
-          />
-
-          <img
-            src={iba}
-            alt="iba highschool logo"
-            className="object-cover bg-white rounded-full size-6 sm:size-8"
-          />
+        <div
+          className="p-2.5 ml-2 rounded-full cursor-pointer hover:bg-[#d6d7dbe2] dark:hover:bg-[#343A46] text-light-text dark:text-dark-text duration-150"
+          onClick={toggleTheme}
+        >
+          {isDarkMode ? (
+            <MdOutlineLightMode className="size-5" />
+          ) : (
+            <FaRegMoon className="size-5" />
+          )}
         </div>
       </div>
 
-      <Outlet />
+      <SemaphoreContextProvider>
+        <Outlet />
+      </SemaphoreContextProvider>
     </>
   );
 }

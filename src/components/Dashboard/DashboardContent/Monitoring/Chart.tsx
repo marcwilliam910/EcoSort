@@ -2,16 +2,16 @@ import {
   buildStyles,
   CircularProgressbarWithChildren,
 } from "react-circular-progressbar";
-import { CgDanger } from "react-icons/cg";
+import {CgDanger} from "react-icons/cg";
 
-export default function Chart({ image, val, name }: ChartProps) {
+export default function Chart({image, val, name}: ChartProps) {
   let style;
   if (val > 75) style = "#FF0000";
   else if (val > 50) style = "#FFFF00";
   else style = "#00FF00";
 
   return (
-    <div className="relative flex flex-col items-center w-56 gap-6 p-6 duration-150 rounded-lg shadow-2xl bg-zinc-50 lg:w-60 xl:w-64 hover:scale-105">
+    <div className="relative flex flex-col items-center w-56 gap-6 p-6 transition-all duration-150 rounded-lg shadow-2xl bg-light-card dark:bg-dark-card dark:text-dark-text lg:w-60 xl:w-64 hover:scale-105">
       {val > 75 && (
         <CgDanger className="absolute text-red-500 right-2 top-2 size-5 animate-ping" />
       )}

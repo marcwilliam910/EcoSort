@@ -1,9 +1,9 @@
-import { createBrowserRouter } from "react-router-dom";
+import {createBrowserRouter} from "react-router-dom";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Monitor from "./components/Dashboard/DashboardContent/Monitoring/Monitor";
 import RecordKeeping from "./components/Dashboard/DashboardContent/RecordKeeping/RecordKeeping";
-import Notification from "./components/Notification/Notification";
+import Notification from "./components/Dashboard/DashboardContent/Notification/Notification";
 import Error from "./pages/Error";
 
 export const router = createBrowserRouter([

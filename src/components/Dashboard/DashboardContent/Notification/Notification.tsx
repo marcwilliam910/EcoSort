@@ -6,31 +6,17 @@ import {
   updateSingleData,
 } from "@/firebase config/firebaseCRUD";
 import {warningToast} from "@/utils/Toast";
-import {memo, useEffect, useState} from "react";
+import {memo, useContext, useEffect, useState} from "react";
 // import {BiLoader} from "react-icons/bi";
 import {MdNotificationsOff, MdNotificationsActive} from "react-icons/md";
 import {Switch} from "@/components/ui/switch";
 import {FaEdit} from "react-icons/fa";
 import {RiDeleteBin6Fill} from "react-icons/ri";
-// import {httpsCallable} from "firebase/functions";
-// import {functions} from "@/firebase config/firebase";
-import Modal from "../shared/Modal";
+import Modal from "../../../shared/Modal";
 import {deleteAlert, errorAlert} from "@/utils/SweetAlerts";
-import Label from "../shared/Label";
-import Input from "../shared/Input";
-
-// const dummyData = [
-//   {id: "1", name: "Jayvee Sucal", number: "09653410782", isEnabled: false},
-//   {id: "2", name: "John Loyd", number: "09876543210", isEnabled: true},
-//   {id: "3", name: "Emma Witson", number: "09098765432", isEnabled: false},
-//   {id: "4", name: "Michael Jordan", number: "09123456789", isEnabled: true},
-//   {id: "5", name: "Sarah Pascual", number: "09345678901", isEnabled: false},
-//   {id: "6", name: "Daniel Padilla", number: "09456789012", isEnabled: true},
-// ];
-
-// interface SemaphoreResponse {
-//   balance: number;
-// }
+import Label from "../../../shared/Label";
+import Input from "../../../shared/Input";
+import {SemaphoreContext} from "@/contexts/SemaphoreContextProvider";
 
 const initalForm = {
   id: "",
@@ -55,11 +41,13 @@ interface ContactData {
 export default function Notification() {
   const [isSmsEnabled, setIsSmsEnabled] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
-  const [smsBalance, setSmsBalance] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [formData, setFormData] = useState(initalForm);
+
+  const {semaphoreData} = useContext(SemaphoreContext);
+  console.log(semaphoreData);
 
   const modalFormInputs = [
     {
@@ -148,25 +136,6 @@ export default function Notification() {
     }
   }
 
-  // async function getSmsBalance() {
-  //   try {
-  //     // Specify the response type as SemaphoreResponse
-  //     const getSemaphoreBalance = httpsCallable<{}, SemaphoreResponse>(
-  //       functions,
-  //       "getSemaphoreAccoundData"
-  //     );
-  //     const result = await getSemaphoreBalance();
-
-  //     setSmsBalance(result.data.balance); // Assuming setSmsBalance expects a number
-  //   } catch (error) {
-  //     warningToast("Something went wrong in fetching SMS balance");
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   getSmsBalance();
-  // }, []);
-
   function handleFormChangeInModal(e: React.ChangeEvent<HTMLSelectElement>) {
     setFormData({
       ...formData,
@@ -213,7 +182,7 @@ export default function Notification() {
   // }
 
   return (
-    <div className="flex justify-center px-4 py-8">
+    <div className="flex justify-center px-4 py-8 md:px-6 lg:px-14">
       {isModalOpen && (
         <Modal<ContactData>
           readRecord={readRecord}
@@ -235,7 +204,7 @@ export default function Notification() {
       )}
       <div className="flex flex-col items-center w-full gap-6">
         <div
-          className={`relative flex items-center p-3 space-x-4 border rounded-full shadow-xl cursor-pointer border-black/20 bg-zinc-300${
+          className={`relative flex items-center p-3 space-x-4 border rounded-full shadow-xl cursor-pointer border-black/20 bg-light-card dark:bg-dark-card ${
             loading
               ? "after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:size-1 after:rounded-full after:bg-green-400 after:animate-loading"
               : ""
@@ -247,7 +216,7 @@ export default function Notification() {
           ) : (
             <MdNotificationsOff className="text-red-400 size-6 md:size-8" />
           )}
-          <span className="font-semibold text-gray-700 md:text-lg">
+          <span className="font-semibold text-gray-700 md:text-lg dark:text-dark-text">
             {isSmsEnabled ? "SMS Enabled" : "SMS Disabled"}
           </span>
           <Switch checked={isSmsEnabled} />
@@ -258,14 +227,14 @@ export default function Notification() {
             isSmsEnabled ? "" : "opacity-20 cursor-not-allowed"
           }`}
         >
-          <div className="relative flex flex-col overflow-y-auto max-h-[28rem] border border-zinc-400 bg-zinc-50  w-full">
-            <div className="sticky top-0 left-0 grid p-2 text-[.80rem] font-bold bg-green-500 text-white grid-cols-4 place-items-center sm:text-base md:text-lg md:font-extrabold">
+          <div className="relative flex flex-col overflow-y-auto max-h-[28rem] border border-zinc-400 bg-light-card w-full dark:bg-dark-card dark:border-dark-border">
+            <div className="sticky top-0 left-0 grid p-2 text-[.80rem] font-bold bg-light-primary text-white grid-cols-4 place-items-center sm:text-base md:text-lg md:font-extrabold dark:bg-dark-primaryFocusBG/30 transition-colors duration-150">
               <h2>Name</h2>
               <h2>Number</h2>
               <h2>Action</h2>
               <h2 className="text-center">Send SMS</h2>
             </div>
-            <div className="divide-y-2 ">
+            <div className="transition-colors duration-150 divide-y-2 dark:text-dark-text dark:divide-dark-border">
               {contacts.map((contact) => (
                 <TableRow
                   key={contact.id}
@@ -295,7 +264,9 @@ export default function Notification() {
             >
               Add Contact
             </button>
-            <p className="text-xs text-gray-500">{smsBalance} messages left</p>
+            <p className="text-xs text-gray-500">
+              {semaphoreData?.balance || 0} messages left
+            </p>
           </div>
         </div>
       </div>
@@ -325,7 +296,7 @@ const TableRow = memo(function TableRow({
   isSmsEnabled,
 }: TableRowProps) {
   return (
-    <div className="grid grid-cols-4 py-2 text-xs text-center duration-150 place-items-center sm:text-sm md:text-base hover:bg-zinc-200">
+    <div className="grid grid-cols-4 py-2 text-xs text-center transition-colors duration-150 place-items-center sm:text-sm md:text-base hover:bg-zinc-200 bg-light-card dark:bg-dark-card dark:text-dark-text text-light-text">
       <p className="px-2">{name}</p>
       <p>{number}</p>
       <div className="flex flex-wrap items-center justify-center gap-0.5 text-zinc-50 md:gap-2">

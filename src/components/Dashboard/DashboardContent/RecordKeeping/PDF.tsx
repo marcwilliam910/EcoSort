@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
   },
   tableHeader: {
     fontSize: 14,
-    backgroundColor: "#22C55E",
+    backgroundColor: "#2F6255",
     color: "white",
     flex: 1,
     textAlign: "center",
@@ -120,7 +120,7 @@ export default function PDF({
       acc.weight += parseFloat(item.weight);
       return acc;
     },
-    { amount: 0, weight: 0 }
+    {amount: 0, weight: 0}
   );
 
   const summaryData = [

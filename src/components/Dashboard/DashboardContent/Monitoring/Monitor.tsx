@@ -2,9 +2,9 @@ import "react-circular-progressbar/dist/styles.css";
 import metal from "../../../../assets/metal.png";
 import paper from "../../../../assets/paper.png";
 import bottle from "../../../../assets/bottle.png";
-import { useEffect, useState } from "react";
-import { fetchData } from "../../../../firebase config/firebaseCRUD";
-import { BiLoader } from "react-icons/bi";
+import {useEffect, useState} from "react";
+import {fetchData} from "../../../../firebase config/firebaseCRUD";
+import {BiLoader} from "react-icons/bi";
 import Chart from "./Chart";
 
 const displayNames: Names = {
@@ -79,7 +79,7 @@ export default function Monitor() {
 interface ToggleButtonProps {
   isSmsEnable: boolean;
 }
-function ToggleButton({ isSmsEnable }: ToggleButtonProps) {
+function ToggleButton({isSmsEnable}: ToggleButtonProps) {
   const selectedStyle = "font-bold text-blue-600 border-2 border-blue-600";
 
   return (

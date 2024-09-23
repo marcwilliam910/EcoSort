@@ -6,9 +6,9 @@ export default {
     extend: {
       keyframes: {
         loading: {
-          "0%": { width: "0%" },
-          "50%": { width: "90%" },
-          "100%": { width: "0%" },
+          "0%": {width: "0%"},
+          "50%": {width: "90%"},
+          "100%": {width: "0%"},
         },
       },
       animation: {
@@ -18,6 +18,28 @@ export default {
         title: "Noto Serif",
       },
       colors: {
+        light: {
+          primary: "#3B8230",
+          primaryHover: "#EBECF0",
+          primaryFocusBG: "#34d399",
+          background: "#E0E0E0",
+          text: "#23272F",
+          card: "#F9F9F9",
+          border: "#E2E8F0",
+        },
+        // Dark mode palette
+        dark: {
+          primary: "#4ACA3A", // A brighter green to contrast with the dark background
+          primaryHover: "#343B47", // Your original primary color, now used for hover
+          primaryFocusBG: "#34d399", // Kept the same as your light mode
+          background: "#23272F", // The dark mode background color you provided
+          text: "#E1E5EA", // Light gray for better readability on dark background
+          card: "#2C3138", // Slightly lighter than the background for cards
+          border: "#3A3F4A", // Darker border color for subtle separation
+        },
+        darkMode: "class",
+
+        // shadcn
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -74,5 +96,5 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("tailwind-scrollbar")],
 };

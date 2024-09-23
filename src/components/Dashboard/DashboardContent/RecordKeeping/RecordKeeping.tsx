@@ -365,7 +365,7 @@ export default function RecordKeeping() {
           </button>
           {records.length != 0 && (
             <button
-              className="flex items-center gap-0.5 hover:underline text-xs md:text-base md:mr-5"
+              className="flex items-center gap-0.5 hover:underline text-xs md:text-base md:mr-5 dark:text-dark-text"
               onClick={downloadPdf}
             >
               <FaPrint className="size-2.5 sm:size-3" />
@@ -386,8 +386,8 @@ export default function RecordKeeping() {
           </div>
         ) : (
           <>
-            <div className="flex gap-3 text-xs sm:text-sm">
-              <div className="flex items-center gap-2">
+            <div className="flex gap-3 text-xs sm:text-sm dark:text-dark-text">
+              <div className="flex items-center gap-2 ">
                 <label htmlFor="item">Month: </label>
                 <SelectComponent
                   value={selectedMonth}
@@ -407,7 +407,7 @@ export default function RecordKeeping() {
                   ))}
                 </select> */}
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 dark:">
                 <label htmlFor="item">Year: </label>
                 <SelectComponent
                   value={selectedYear}
@@ -429,19 +429,19 @@ export default function RecordKeeping() {
               </div>
             </div>
             {isLoading ? (
-              <div className="grid place-items-center h-52">
+              <div className="grid place-items-center h-52 dark:text-dark-text">
                 <BiLoader className="size-10 animate-spin md:size-16" />
               </div>
             ) : (
-              <div className="relative flex flex-col overflow-y-auto max-h-[28rem] border border-zinc-400 bg-zinc-50">
-                <div className="sticky top-0 left-0 grid p-2 text-[.80rem] font-bold bg-green-500 text-white grid-cols-tableDefault place-items-center sm:text-base md:text-lg md:font-extrabold">
+              <div className="relative flex flex-col overflow-y-auto max-h-[28rem] border border-zinc-400 bg-light-card dark:bg-dark-card dark:border-dark-border transition-colors duration-150">
+                <div className="sticky top-0 left-0 grid p-2 text-[.80rem] font-bold bg-light-primary text-white grid-cols-tableDefault place-items-center sm:text-base md:text-lg md:font-extrabold dark:bg-dark-primaryFocusBG/30">
                   <h2>Type</h2>
                   <h2>Weight</h2>
                   <h2>Amount</h2>
                   <h2>Date</h2>
                   <h2>Action</h2>
                 </div>
-                <div className="divide-y-2 ">
+                <div className="transition-colors duration-150 divide-y-2 text-light-text dark:text-dark-text dark:divide-dark-border">
                   {recordToShow
                     .sort(
                       (a, b) =>
@@ -518,7 +518,7 @@ const TableRow = memo(function TableRow({
   console.log("Render for TableRow");
 
   return (
-    <div className="grid py-2 text-xs text-center duration-150 grid-cols-tableDefault place-items-center sm:text-sm md:text-base hover:bg-zinc-200">
+    <div className="grid py-2 text-xs text-center duration-150 grid-cols-tableDefault place-items-center sm:text-sm md:text-base hover:bg-zinc-200 dark:hover:bg-dark-primaryHover">
       <p>{type}</p>
       <p>{weight}kg</p>
       <p>₱{amount}</p>

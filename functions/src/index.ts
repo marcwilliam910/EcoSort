@@ -55,10 +55,12 @@ export const sendNotification = onDocumentUpdated(
   }
 );
 
-export const getSemaphoreAccoundData = onCall(
-  {secrets: [semaphoreApiKey], cors: true},
+export const getSemaphoreAccountData = onCall(
+  {secrets: [semaphoreApiKey]},
   async () => {
     const apikey = semaphoreApiKey.value();
+    console.log("API Key:", apikey);
+
     const url = "https://api.semaphore.co/api/v4/account";
 
     try {
