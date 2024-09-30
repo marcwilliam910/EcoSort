@@ -70,13 +70,16 @@ export async function updateData(
 //   isEnable: boolean;
 // }
 
-export async function fetchSingleDocument(
+export async function fetchSingleDocument<T>(
   collectionName: string,
   documentName: string
 ) {
   const docSnap = await getDoc(doc(db, collectionName, documentName));
   if (docSnap.exists()) {
-    return docSnap.data().isEnabled;
+    // Return an object that includes the document id and its data
+    return {id: docSnap.id, ...(docSnap.data() as T)};
+  } else {
+    throw new Error("Document does not exist");
   }
 }
 
@@ -88,3 +91,17 @@ export async function updateSingleData(
   const documentRef = doc(db, collectionName, id);
   await updateDoc(documentRef, data);
 }
+
+export async function addDocumentInCollection<T extends Object>(
+  collectionName: string,
+  documentName: string,
+  defaultField: T
+) {
+  await setDoc(doc(db, collectionName, documentName), defaultField);
+}
+
+// interface DefaultFieldType {
+//   Paper: number;
+//   Metal: number;
+//   Plastic: number;
+// }

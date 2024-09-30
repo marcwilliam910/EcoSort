@@ -1,4 +1,4 @@
-import {useEffect, useState, memo, useCallback} from "react";
+import {useEffect, useState, memo, useCallback, useContext} from "react";
 import {deleteData, fetchData} from "../../../../firebase config/firebaseCRUD";
 import {deleteAlert, errorAlert} from "../../../../utils/SweetAlerts";
 import DynamicChart, {LineChart} from "./Charts";
@@ -13,6 +13,7 @@ import SelectComponent from "@/components/shadcn/SelectComponent";
 import Label from "@/components/shared/Label";
 import Input from "@/components/shared/Input";
 import Modal from "@/components/shared/Modal";
+import {ThemeContext} from "@/contexts/ThemeContextProvider";
 
 const initalForm: Record = {
   id: "",
@@ -86,6 +87,8 @@ export default function RecordKeeping() {
   const [totalWasteWeight, setTotalWasteWeight] = useState<ChartData[]>([]);
   const [yearlySalesData, setYearlySalesData] = useState<YearlyData[]>([]);
   const [yearlyWeightData, setYearlyWeightData] = useState<YearlyData[]>([]);
+
+  const {isDarkMode} = useContext(ThemeContext);
 
   const modalFormInputs = [
     {
@@ -263,27 +266,30 @@ export default function RecordKeeping() {
       const recordArray = await fetchData<RecordData>("records");
       setRecords(recordArray);
     } catch (error) {
-      errorAlert("Failed to fetch records");
+      errorAlert("Failed to fetch records", isDarkMode);
     } finally {
       setIsLoading(false);
     }
   }
 
-  const handleDeleteRecord = useCallback(async (id: string) => {
-    const permission = await deleteAlert();
-    if (permission) {
-      try {
-        await deleteData("records", id);
-        readRecord();
-        // if (months.length === 0) {
-        //   setSelectedMonth(monthNames[new Date().getMonth()]);
-        //   setSelectedYear(new Date().getFullYear().toString());
-        // }
-      } catch (error) {
-        errorAlert("Failed to delete record");
+  const handleDeleteRecord = useCallback(
+    async (id: string) => {
+      const permission = await deleteAlert(isDarkMode);
+      if (permission) {
+        try {
+          await deleteData("records", id);
+          readRecord();
+          // if (months.length === 0) {
+          //   setSelectedMonth(monthNames[new Date().getMonth()]);
+          //   setSelectedYear(new Date().getFullYear().toString());
+          // }
+        } catch (error) {
+          errorAlert("Failed to delete record", isDarkMode);
+        }
       }
-    }
-  }, []);
+    },
+    [isDarkMode]
+  );
 
   const handleEditRecord = useCallback(
     (id: string) => {
@@ -295,10 +301,10 @@ export default function RecordKeeping() {
         setFormData(editRecord);
         setIsModalOpen(true);
       } else {
-        errorAlert("Something went wrong! No record found");
+        errorAlert("Something went wrong! No record found", isDarkMode);
       }
     },
-    [records]
+    [records, isDarkMode]
   );
 
   async function downloadPdf() {

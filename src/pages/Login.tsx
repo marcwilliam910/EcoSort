@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import digitalized from "../assets/digitalized.jpg";
 import logo from "../assets/logo.png";
-import { auth } from "../firebase config/firebase";
+import {auth} from "../firebase config/firebase";
 import {
   browserLocalPersistence,
   browserSessionPersistence,
@@ -9,7 +9,7 @@ import {
   setPersistence,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import ForgotPassword from "../components/Login/ForgotPassword";
 
@@ -28,8 +28,8 @@ export default function Login() {
   const [isResetting, setIsResetting] = useState<boolean>(false);
   const [isChecked, setIsChecked] = useState<boolean>(false);
 
-  function handleUserForm(e: { target: { name: string; value: string } }) {
-    setUserForm({ ...userForm, [e.target.name]: e.target.value });
+  function handleUserForm(e: {target: {name: string; value: string}}) {
+    setUserForm({...userForm, [e.target.name]: e.target.value});
   }
 
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
@@ -81,7 +81,7 @@ export default function Login() {
   return (
     <div
       className="flex flex-col items-center justify-center min-h-screen gap-6 bg-center bg-cover lg:gap-12"
-      style={{ backgroundImage: `url(${digitalized})` }}
+      style={{backgroundImage: `url(${digitalized})`}}
     >
       {" "}
       <img
@@ -110,7 +110,7 @@ interface LoginFormProps {
   handleLogin: (e: React.FormEvent<HTMLFormElement>) => void;
   userForm: FormState;
   error: string;
-  handleUserForm: (e: { target: { name: any; value: any } }) => void;
+  handleUserForm: (e: {target: {name: any; value: any}}) => void;
   onForgotPasswordClick: () => void;
   isChecked: boolean;
   setIsChecked: (isChecked: boolean) => void;
@@ -189,7 +189,7 @@ function LoginForm({
   );
 }
 
-function Input({ type, label, value, onChange, error }: InputProps) {
+function Input({type, label, value, onChange, error}: InputProps) {
   return (
     <div className="space-y-1">
       <label htmlFor={label} className="text-sm lg:text-base">
@@ -198,7 +198,7 @@ function Input({ type, label, value, onChange, error }: InputProps) {
       <input
         type={type}
         required
-        className={`w-full p-1.5 px-3 rounded-md bg-transparent border outline-none ${
+        className={`w-full p-1.5 px-3 rounded-md bg-transparent border outline-none border-white ${
           error && "border-red-500"
         }`}
         name={type}

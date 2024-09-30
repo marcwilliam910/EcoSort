@@ -1,7 +1,5 @@
 import {RiMenu3Line} from "react-icons/ri";
 import {Outlet} from "react-router-dom";
-import yesLogo from "../../../../src/assets/yes_o_logo.png";
-import iba from "../../../assets/iba-logo.png";
 import {FaRegMoon} from "react-icons/fa";
 import {MdOutlineLightMode} from "react-icons/md";
 
@@ -18,7 +16,7 @@ export default function DashboardContent({onToggleNav}: DashboardContentProps) {
 
   return (
     <>
-      <div className="sticky top-0 left-0 right-0 z-10 flex items-center px-3 py-3.5 dark:bg-dark-card dark:border-none dark:shadow-lg sm:px-4 lg:p-5 bg-light-card shadow-md dark:text-dark-text text-light-text transition-all duration-150">
+      <header className="sticky top-0 left-0 right-0 z-10 flex items-center px-3 py-3.5 dark:bg-dark-card dark:border-none dark:shadow-lg sm:px-4 lg:p-5 bg-light-card shadow-md dark:text-dark-text text-light-text transition-all duration-150">
         <div className="w-8">
           <RiMenu3Line
             onClick={onToggleNav}
@@ -29,7 +27,7 @@ export default function DashboardContent({onToggleNav}: DashboardContentProps) {
           EcoSort
         </h1>
         <div
-          className="p-2.5 ml-2 rounded-full cursor-pointer hover:bg-[#d6d7dbe2] dark:hover:bg-[#343A46] text-light-text dark:text-dark-text duration-150"
+          className="p-2.5 rounded-full cursor-pointer hover:bg-[#d6d7dbe2] dark:hover:bg-[#343A46] text-light-text dark:text-dark-text duration-150"
           onClick={toggleTheme}
         >
           {isDarkMode ? (
@@ -38,7 +36,7 @@ export default function DashboardContent({onToggleNav}: DashboardContentProps) {
             <FaRegMoon className="size-5" />
           )}
         </div>
-      </div>
+      </header>
 
       <SemaphoreContextProvider>
         <Outlet />

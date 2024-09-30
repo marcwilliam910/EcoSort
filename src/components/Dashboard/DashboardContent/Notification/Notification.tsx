@@ -17,6 +17,7 @@ import {deleteAlert, errorAlert} from "@/utils/SweetAlerts";
 import Label from "../../../shared/Label";
 import Input from "../../../shared/Input";
 import {SemaphoreContext} from "@/contexts/SemaphoreContextProvider";
+import {ThemeContext} from "@/contexts/ThemeContextProvider";
 
 const initalForm = {
   id: "",
@@ -46,6 +47,7 @@ export default function Notification() {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [formData, setFormData] = useState(initalForm);
 
+  const {isDarkMode} = useContext(ThemeContext);
   const {semaphoreData} = useContext(SemaphoreContext);
   console.log(semaphoreData);
 
@@ -75,11 +77,11 @@ export default function Notification() {
   async function getNotificationPermission() {
     try {
       setLoading(true);
-      const permission = await fetchSingleDocument(
+      const permission = await fetchSingleDocument<{isEnabled: boolean}>(
         "notificationSettings",
         "permission"
       );
-      setIsSmsEnabled(permission);
+      setIsSmsEnabled(permission.isEnabled);
     } catch (e) {
       warningToast("Something went wrong in fetching notification permission");
     } finally {
@@ -106,19 +108,19 @@ export default function Notification() {
       const recordArray = await fetchData<ContactData>("contacts");
       setContacts(recordArray);
     } catch (error) {
-      errorAlert("Failed to fetch records");
+      errorAlert("Failed to fetch records", isDarkMode);
     } finally {
     }
   }
 
   async function handleDelete(id: string) {
-    const permission = await deleteAlert();
+    const permission = await deleteAlert(isDarkMode);
     if (permission) {
       try {
         await deleteData("contacts", id);
         readRecord();
       } catch (error) {
-        errorAlert("Failed to delete record");
+        errorAlert("Failed to delete record", isDarkMode);
       }
     }
   }
@@ -132,7 +134,7 @@ export default function Notification() {
       setFormData(editRecord);
       setIsModalOpen(true);
     } else {
-      errorAlert("Something went wrong! No record found");
+      errorAlert("Something went wrong! No record found", isDarkMode);
     }
   }
 
@@ -159,7 +161,7 @@ export default function Notification() {
         readRecord();
       }
     } catch (error) {
-      errorAlert("Error updating");
+      errorAlert("Something went wrong! please try again", isDarkMode);
 
       console.log(error);
     }

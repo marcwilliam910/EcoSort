@@ -11,7 +11,7 @@ export default function Chart({image, val, name}: ChartProps) {
   else style = "#00FF00";
 
   return (
-    <div className="relative flex flex-col items-center w-56 gap-6 p-6 transition-all duration-150 rounded-lg shadow-2xl bg-light-card dark:bg-dark-card dark:text-dark-text lg:w-60 xl:w-64 hover:scale-105">
+    <div className="relative flex flex-col items-center w-56 gap-6 p-6 transition-all duration-150 rounded-lg shadow-2xl bg-light-card dark:bg-dark-card dark:text-dark-text lg:w-60 xl:w-64">
       {val > 75 && (
         <CgDanger className="absolute text-red-500 right-2 top-2 size-5 animate-ping" />
       )}

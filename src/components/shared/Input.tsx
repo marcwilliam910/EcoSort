@@ -23,7 +23,7 @@ export default function Input({
     return (
       <select
         id={id}
-        className="block w-full p-2 mt-1 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 md:text-base"
+        className="block w-full p-2 mt-1 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 md:text-base dark:bg-dark-background dark:border-dark-border"
         onChange={onChange}
         value={value}
       >
@@ -40,7 +40,7 @@ export default function Input({
       type={type}
       id={id}
       required
-      className="block w-full p-2 mt-1 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 md:text-base"
+      className="block w-full p-2 mt-1 text-sm border border-gray-300 rounded-md shadow-sm dark:bg-dark-background dark:border-dark-border focus:outline-none focus:ring-blue-500 focus:border-blue-500 md:text-base dark:focus:border-blue-500"
       onChange={onChange}
       value={value}
       {...(type === "date" ? {max} : {})}

@@ -5,6 +5,7 @@ import Monitor from "./components/Dashboard/DashboardContent/Monitoring/Monitor"
 import RecordKeeping from "./components/Dashboard/DashboardContent/RecordKeeping/RecordKeeping";
 import Notification from "./components/Dashboard/DashboardContent/Notification/Notification";
 import Error from "./pages/Error";
+import WasteValue from "./components/Dashboard/DashboardContent/WasteValue/WasteValue";
 
 export const router = createBrowserRouter([
   {
@@ -15,6 +16,15 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <Monitor />,
+      },
+      {
+        path: "monitor",
+        children: [
+          {
+            path: ":location",
+            element: <WasteValue />,
+          },
+        ],
       },
       {
         path: "records",
@@ -30,5 +40,9 @@ export const router = createBrowserRouter([
     path: "/login",
     element: <Login />,
     errorElement: <Error />,
+  },
+  {
+    path: "error", // Error route
+    element: <Error />, // This is your error component
   },
 ]);

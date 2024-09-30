@@ -1,5 +1,3 @@
-// DONT SAVE IF PRETTIER IS ENABLED
-
 // Dependencies for callable functions.
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import axios from "axios";
@@ -12,44 +10,63 @@ import {onDocumentUpdated} from "firebase-functions/v2/firestore";
 admin.initializeApp();
 const semaphoreApiKey = defineSecret("SEMAPHORE_APIKEY");
 
-export const sendNotification = onDocumentUpdated(
-  "sensor/{sensorId}",
+/**
+ * Sends a notification to all registered devices about the status of a specific bin.
+ *
+ * @param {string} location - The location of the bin.
+ * @return {Promise<void>}
+ */
+async function sendNotification(location: string): Promise<void> {
+  try {
+    // Get all FCM tokens from Firestore
+    const tokensSnapshot = await admin
+      .firestore()
+      .collection("fcmTokens")
+      .get();
+
+    const tokens: string[] = tokensSnapshot.docs.map(
+      (doc) => doc.data().token as string
+    );
+
+    if (tokens.length > 0) {
+      const message: admin.messaging.MulticastMessage = {
+        tokens,
+        notification: {
+          title: "Project Robert",
+          body: `Alert: The bins at ${location.toUpperCase()} are nearing full capacity. Kindly ensure they are emptied soon.`,
+        },
+      };
+
+      // Send multicast notifications
+      const response = await admin.messaging().sendEachForMulticast(message);
+      console.log("Notifications sent:", response);
+    } else {
+      console.log("No tokens available.");
+    }
+  } catch (error) {
+    console.error("Error sending notifications:", error);
+  }
+}
+
+export const checkDocuments = onDocumentUpdated(
+  "sensor/{sensorID}",
   async (event) => {
-    const newValue = event.data?.after.data();
-    const binValue = newValue?.value;
-    const binName = event.params.sensorId; // Extract the bin name (document ID)
+    const locationName = event.params.sensorID;
 
-    if (binValue > 90) {
-      try {
-        // Get all FCM tokens from Firestore
-        const tokensSnapshot = await admin
-          .firestore()
-          .collection("fcmTokens")
-          .get();
+    const data = event.data?.after?.data();
 
-        // Assuming the token is stored as a field under each user's document
-        const tokens = tokensSnapshot.docs.map((doc) => doc.data().token);
+    if (!data) {
+      console.log("No data found after the update.");
+      return;
+    }
 
-        if (tokens.length > 0) {
-          // Create notification payload
-          const message = {
-            tokens, // Send to multiple devices
-            notification: {
-              title: "Project Robert",
-              body: `The ${binName} bin is ${binValue}% full. Please empty it soon!`,
-            },
-          };
+    // Fields to check
+    const fields = ["Paper", "Metal", "Bottle"];
 
-          // Send multicast notifications
-          const response = await admin
-            .messaging()
-            .sendEachForMulticast(message);
-          console.log("Notifications sent:", response);
-        } else {
-          console.log("No tokens available.");
-        }
-      } catch (error) {
-        console.error("Error sending notifications:", error);
+    for (const field of fields) {
+      if (data[field] > 90) {
+        await sendNotification(locationName);
+        break; // Stop the loop once a field satisfies the condition
       }
     }
   }
