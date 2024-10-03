@@ -1,3 +1,5 @@
+import {SemaphoreContext} from "@/contexts/SemaphoreContextProvider";
+import {useContext, useEffect} from "react";
 import {
   buildStyles,
   CircularProgressbarWithChildren,
@@ -5,6 +7,12 @@ import {
 import {CgDanger} from "react-icons/cg";
 
 export default function Chart({image, val, name}: ChartProps) {
+  const {getSemaphoreCredit} = useContext(SemaphoreContext);
+
+  useEffect(() => {
+    if (val > 90) getSemaphoreCredit();
+  }, [val]);
+
   let style;
   if (val > 75) style = "#FF0000";
   else if (val > 50) style = "#FFFF00";

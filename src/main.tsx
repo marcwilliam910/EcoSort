@@ -6,9 +6,9 @@ import {router} from "./router";
 import LocationModalContextProvider from "./contexts/LocationModalContextProvider";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  // <React.StrictMode>
-  <LocationModalContextProvider>
-    <RouterProvider router={router} />
-  </LocationModalContextProvider>
-  // </React.StrictMode>
+  <React.StrictMode>
+    <LocationModalContextProvider>
+      <RouterProvider router={router} />
+    </LocationModalContextProvider>
+  </React.StrictMode>
 );

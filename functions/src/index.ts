@@ -6,8 +6,10 @@ import {defineSecret} from "firebase-functions/params";
 // Dependencies for Firestore and FCM.
 import * as admin from "firebase-admin";
 import {onDocumentUpdated} from "firebase-functions/v2/firestore";
+import {getFirestore} from "firebase-admin/firestore";
 
 admin.initializeApp();
+const db = getFirestore();
 const semaphoreApiKey = defineSecret("SEMAPHORE_APIKEY");
 
 /**
@@ -48,14 +50,99 @@ async function sendNotification(location: string): Promise<void> {
   }
 }
 
+/**
+ * Send sms notifications
+ *
+ * @param {string} location
+ * @param {string[]} contactNumbers
+ * @param {string} apikey
+ * @return {Promise<void>}
+ */
+async function sendSMS(
+  location: string,
+  contactNumbers: string[],
+  apikey: string
+): Promise<void> {
+  if (contactNumbers.length === 0) {
+    console.log("No contact numbers found.");
+    return;
+  }
+
+  const message = `Alert: The bins at ${location.toUpperCase()} are nearing full capacity. Kindly ensure they are emptied soon.`;
+  const numbersString = contactNumbers.join(",");
+
+  const url = "https://api.semaphore.co/api/v4/messages";
+
+  try {
+    const response = await axios.post(url, {
+      apikey,
+      message,
+      sendername: "EcoSort",
+      number: numbersString,
+    });
+
+    if (response.data && response.data.message_id) {
+      console.log(
+        `SMS sent successfully to ${numbersString}. Message ID: ${response.data.message_id}`
+      );
+    } else {
+      console.error("Failed to send SMS. Unexpected response:", response.data);
+    }
+  } catch (err) {
+    console.error("Error sending SMS:", err);
+  }
+}
+
+/**
+ * Checks if SMS notifications are enabled and sends notifications if the bin is full.
+ *
+ * @return {Promise<boolean>}
+ */
+async function checkSmsPermission(): Promise<boolean> {
+  const docRef = db.collection("notificationSettings").doc("permission");
+  const doc = await docRef.get();
+
+  if (doc.exists) {
+    const data = doc.data();
+    return data?.isEnabled;
+  }
+
+  return false;
+}
+
+/**
+ * Retrieves contact numbers from Firestore
+ *
+ * @return {Promise<string[]>}
+ */
+async function getContacts(): Promise<string[]> {
+  const contactRef = db.collection("contacts");
+  const snapshot = await contactRef.get();
+
+  const contactNumbers: string[] = [];
+
+  snapshot.forEach((doc) => {
+    const data = doc.data();
+    if (data.isEnabled && data.number) {
+      contactNumbers.push(data.number);
+    }
+  });
+
+  return contactNumbers;
+}
+
 export const checkDocuments = onDocumentUpdated(
-  "sensor/{sensorID}",
+  {
+    document: "/sensor/{sensorID}",
+    secrets: [semaphoreApiKey],
+  },
   async (event) => {
     const locationName = event.params.sensorID;
 
-    const data = event.data?.after?.data();
+    const beforeData = event.data?.before?.data();
+    const afterData = event.data?.after?.data();
 
-    if (!data) {
+    if (!afterData || !beforeData) {
       console.log("No data found after the update.");
       return;
     }
@@ -64,7 +151,13 @@ export const checkDocuments = onDocumentUpdated(
     const fields = ["Paper", "Metal", "Bottle"];
 
     for (const field of fields) {
-      if (data[field] > 90) {
+      if (afterData[field] > 90 && beforeData[field] + 3 <= afterData[field]) {
+        const smsPermission = await checkSmsPermission();
+        if (smsPermission) {
+          const apikey = semaphoreApiKey.value();
+          const contactNumbers = await getContacts();
+          await sendSMS(locationName, contactNumbers, apikey);
+        }
         await sendNotification(locationName);
         break; // Stop the loop once a field satisfies the condition
       }
@@ -76,7 +169,6 @@ export const getSemaphoreAccountData = onCall(
   {secrets: [semaphoreApiKey]},
   async () => {
     const apikey = semaphoreApiKey.value();
-    console.log("API Key:", apikey);
 
     const url = "https://api.semaphore.co/api/v4/account";
 

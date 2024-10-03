@@ -1,7 +1,7 @@
 import {auth, functions} from "@/firebase config/firebase";
 import {onAuthStateChanged} from "firebase/auth";
 import {httpsCallable} from "firebase/functions";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 
 export default function useFetchSemaphore<T>(functionName: string) {
   const [data, setData] = useState<T | null>(null);
@@ -10,19 +10,37 @@ export default function useFetchSemaphore<T>(functionName: string) {
   const CACHE_KEY = "semaphoreCache";
   const CACHE_EXPIRY = 60 * 1000; // 1 minute cache expiry
 
-  async function getSemaphoreData() {
-    setLoading(true);
-    setError(null);
+  const getSemaphoreCredit = useCallback(async () => {
+    const cachedSemaphoreData = localStorage.getItem(CACHE_KEY);
+
+    if (cachedSemaphoreData) {
+      try {
+        const cachedData = JSON.parse(cachedSemaphoreData);
+        const now = new Date().getTime();
+
+        if (now - cachedData.timestamp < CACHE_EXPIRY) {
+          setData(cachedData.data);
+          setLoading(false);
+          return;
+        }
+      } catch (err) {
+        console.error("Error parsing cached data:", err);
+      }
+    }
 
     try {
+      setLoading(true);
+      setError(null);
+
       const semaphoreData = httpsCallable(functions, functionName);
       const result = await semaphoreData();
-      setData(result.data as T);
+      const newData = result.data as T;
+      setData(newData);
       localStorage.setItem(
         CACHE_KEY,
         JSON.stringify({
           timestamp: new Date().getTime(),
-          data: result.data as T,
+          data: newData,
         })
       );
     } catch (error) {
@@ -30,34 +48,24 @@ export default function useFetchSemaphore<T>(functionName: string) {
     } finally {
       setLoading(false);
     }
-  }
-
+  }, [functionName]);
   useEffect(() => {
-    const cachedDataString = localStorage.getItem(CACHE_KEY);
-
-    if (cachedDataString) {
-      // Check if data exists in localStorage
-      const cachedData = JSON.parse(cachedDataString);
-      const now = new Date().getTime();
-
-      if (now - cachedData.timestamp < CACHE_EXPIRY) {
-        // Use cached data if it's not expired
-        setData(cachedData.data);
-        return; // Return early if cached data is used
-      }
-    }
-
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         // Delay the token storage slightly to ensure Firebase is fully initialized
         setTimeout(() => {
-          getSemaphoreData();
+          getSemaphoreCredit();
         }, 1000);
+      } else {
+        // Clear data when user logs out
+        setData(null);
+        setError(null);
+        setLoading(false);
       }
     });
 
     return () => unsubscribe();
   }, []);
 
-  return {data, error, loading};
+  return {data, error, loading, getSemaphoreCredit};
 }

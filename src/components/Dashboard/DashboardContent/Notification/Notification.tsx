@@ -13,11 +13,12 @@ import {Switch} from "@/components/ui/switch";
 import {FaEdit} from "react-icons/fa";
 import {RiDeleteBin6Fill} from "react-icons/ri";
 import Modal from "../../../shared/Modal";
-import {deleteAlert, errorAlert} from "@/utils/SweetAlerts";
+import {deleteAlert, errorAlert, infoAlert} from "@/utils/SweetAlerts";
 import Label from "../../../shared/Label";
 import Input from "../../../shared/Input";
 import {SemaphoreContext} from "@/contexts/SemaphoreContextProvider";
 import {ThemeContext} from "@/contexts/ThemeContextProvider";
+import no_contact from "@/assets/no_contact.png";
 
 const initalForm = {
   id: "",
@@ -48,8 +49,7 @@ export default function Notification() {
   const [formData, setFormData] = useState(initalForm);
 
   const {isDarkMode} = useContext(ThemeContext);
-  const {semaphoreData} = useContext(SemaphoreContext);
-  console.log(semaphoreData);
+  const {semaphoreCredits} = useContext(SemaphoreContext);
 
   const modalFormInputs = [
     {
@@ -90,11 +90,21 @@ export default function Notification() {
   }
 
   async function updateNotificationPermission() {
+    const creditCheck = await checkSemaphoreCredits();
+    if (!creditCheck) return;
     try {
-      setLoading(true);
-      await updateData("notificationSettings", "permission", {
-        isEnabled: !isSmsEnabled,
-      });
+      if (contacts.length === 0) {
+        infoAlert(
+          "Please add a contact before enabling SMS notifications.",
+          isDarkMode,
+          3000
+        );
+      } else {
+        setLoading(true);
+        await updateData("notificationSettings", "permission", {
+          isEnabled: !isSmsEnabled,
+        });
+      }
       await getNotificationPermission();
     } catch (error) {
       warningToast("Something went wrong in updating notification permission");
@@ -105,11 +115,13 @@ export default function Notification() {
 
   async function readRecord() {
     try {
+      setLoading(true);
       const recordArray = await fetchData<ContactData>("contacts");
       setContacts(recordArray);
     } catch (error) {
       errorAlert("Failed to fetch records", isDarkMode);
     } finally {
+      setLoading(false);
     }
   }
 
@@ -117,10 +129,13 @@ export default function Notification() {
     const permission = await deleteAlert(isDarkMode);
     if (permission) {
       try {
+        setLoading(true);
         await deleteData("contacts", id);
         readRecord();
       } catch (error) {
         errorAlert("Failed to delete record", isDarkMode);
+      } finally {
+        setLoading(false);
       }
     }
   }
@@ -154,6 +169,7 @@ export default function Notification() {
     );
 
     try {
+      setLoading(true);
       if (contact) {
         await updateSingleData("contacts", id, {
           isEnabled: !contact.data.isEnabled,
@@ -164,15 +180,51 @@ export default function Notification() {
       errorAlert("Something went wrong! please try again", isDarkMode);
 
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   }
 
+  async function updatePermissionWhenNoContact(isEnabled: boolean) {
+    try {
+      await updateData("notificationSettings", "permission", {
+        isEnabled: isEnabled,
+      });
+
+      await getNotificationPermission();
+    } catch (e) {
+      warningToast("Something went wrong in updating notification permission");
+    }
+  }
+
+  async function checkSemaphoreCredits() {
+    if (semaphoreCredits === 0) {
+      infoAlert(
+        "Insufficient semaphore credits. Please purchase more credits to enable SMS notifications.",
+        isDarkMode,
+        5000,
+        {url: "https://semaphore.co/payments", text: "Buy credits here"}
+      );
+      await updatePermissionWhenNoContact(false);
+      return false;
+    }
+
+    return true;
+  }
+
   useEffect(() => {
-    getNotificationPermission();
-  }, []);
+    checkSemaphoreCredits();
+  }, [semaphoreCredits]);
+
+  useEffect(() => {
+    if (contacts.length === 0) {
+      updatePermissionWhenNoContact(false);
+    }
+  }, [contacts]);
 
   useEffect(() => {
     readRecord();
+    getNotificationPermission();
   }, []);
 
   // if (loading) {
@@ -223,54 +275,78 @@ export default function Notification() {
           </span>
           <Switch checked={isSmsEnabled} />
         </div>
+
         {/* table */}
-        <div
-          className={`w-full space-y-3 ${
-            isSmsEnabled ? "" : "opacity-20 cursor-not-allowed"
-          }`}
-        >
-          <div className="relative flex flex-col overflow-y-auto max-h-[28rem] border border-zinc-400 bg-light-card w-full dark:bg-dark-card dark:border-dark-border">
-            <div className="sticky top-0 left-0 grid p-2 text-[.80rem] font-bold bg-light-primary text-white grid-cols-4 place-items-center sm:text-base md:text-lg md:font-extrabold dark:bg-dark-primaryFocusBG/30 transition-colors duration-150">
-              <h2>Name</h2>
-              <h2>Number</h2>
-              <h2>Action</h2>
-              <h2 className="text-center">Send SMS</h2>
-            </div>
-            <div className="transition-colors duration-150 divide-y-2 dark:text-dark-text dark:divide-dark-border">
-              {contacts.map((contact) => (
-                <TableRow
-                  key={contact.id}
-                  name={contact.data.name}
-                  number={contact.data.number}
-                  isSwitchEnabled={contact.data.isEnabled}
-                  onDelete={handleDelete}
-                  onEdit={handleEdit}
-                  id={contact.id}
-                  onSwitchChange={handleSwitchChange}
-                  isSmsEnabled={isSmsEnabled}
-                />
-              ))}
-            </div>
-          </div>
-          <div className="flex justify-between w-full sm:pr-3">
+        {contacts.length === 0 ? (
+          <div className="flex flex-col items-center gap-2 mt-5 md:gap-5">
+            <h1 className="text-lg font-bold text-center text-red-500 md:text-xl lg:text-2xl xl:text-3xl">
+              Oops! No Contact Number Available
+            </h1>
+            <img
+              src={no_contact}
+              alt="No contact image"
+              className="h-60 md:h-80"
+            />
             <button
-              className={`px-3 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 md:px-4 md:py-2.5 md:text-base ${
-                !isSmsEnabled ? "cursor-not-allowed" : "cursor-pointer"
-              }`}
+              className={`px-10 py-2.5 text-sm text-white bg-blue-600 hover:bg-blue-700 md:px-14 md:py-3 md:text-base cursor-pointer lg:text-lg`}
               onClick={() => {
                 setIsEditing(false);
                 setFormData(initalForm);
                 setIsModalOpen(true);
               }}
-              disabled={!isSmsEnabled}
             >
               Add Contact
             </button>
-            <p className="text-xs text-gray-500">
-              {semaphoreData?.balance || 0} messages left
-            </p>
           </div>
-        </div>
+        ) : (
+          <div
+            className={`w-full space-y-3 ${
+              isSmsEnabled ? "" : "opacity-20 cursor-not-allowed"
+            }`}
+          >
+            <div className="relative flex flex-col overflow-y-auto max-h-[28rem] border border-zinc-400 bg-light-card w-full dark:bg-dark-card dark:border-dark-border">
+              <div className="sticky top-0 left-0 grid p-2 text-[.80rem] font-bold bg-light-primary text-white grid-cols-4 place-items-center sm:text-base md:text-lg md:font-extrabold dark:bg-dark-primaryFocusBG/30 transition-colors duration-150">
+                <h2>Name</h2>
+                <h2>Number</h2>
+                <h2>Action</h2>
+                <h2 className="text-center">Send SMS</h2>
+              </div>
+              <div className="transition-colors duration-150 divide-y-2 dark:text-dark-text dark:divide-dark-border">
+                {contacts.map((contact) => (
+                  <TableRow
+                    key={contact.id}
+                    name={contact.data.name}
+                    number={contact.data.number}
+                    isSwitchEnabled={contact.data.isEnabled}
+                    onDelete={handleDelete}
+                    onEdit={handleEdit}
+                    id={contact.id}
+                    onSwitchChange={handleSwitchChange}
+                    isSmsEnabled={isSmsEnabled}
+                  />
+                ))}
+              </div>
+            </div>
+            <div className="flex justify-between w-full sm:pr-3">
+              <button
+                className={`px-3 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 md:px-4 md:py-2.5 md:text-base ${
+                  !isSmsEnabled ? "cursor-not-allowed" : "cursor-pointer"
+                }`}
+                onClick={() => {
+                  setIsEditing(false);
+                  setFormData(initalForm);
+                  setIsModalOpen(true);
+                }}
+                disabled={!isSmsEnabled}
+              >
+                Add Contact
+              </button>
+              <p className="text-xs text-gray-500">
+                {semaphoreCredits} messages left
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -298,7 +374,7 @@ const TableRow = memo(function TableRow({
   isSmsEnabled,
 }: TableRowProps) {
   return (
-    <div className="grid grid-cols-4 py-2 text-xs text-center transition-colors duration-150 place-items-center sm:text-sm md:text-base hover:bg-zinc-200 bg-light-card dark:bg-dark-card dark:text-dark-text text-light-text">
+    <div className="grid grid-cols-4 py-2 text-xs text-center transition-colors duration-150 place-items-center sm:text-sm md:text-base hover:bg-zinc-200 bg-light-card dark:bg-dark-card dark:text-dark-text text-light-text dark:hover:bg-dark-primaryHover">
       <p className="px-2">{name}</p>
       <p>{number}</p>
       <div className="flex flex-wrap items-center justify-center gap-0.5 text-zinc-50 md:gap-2">

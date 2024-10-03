@@ -2,21 +2,28 @@ import useFetchSemaphore from "@/custom/useFetchSemaphore";
 import React, {createContext} from "react";
 
 const defaultValue: SemaphoreContextType = {
-  semaphoreData: null,
+  semaphoreCredits: 0,
   error: null,
   loading: false,
+  getSemaphoreCredit: async () => {},
 };
 
 export const SemaphoreContext =
   createContext<SemaphoreContextType>(defaultValue);
 
 export default function SemaphoreContextProvider({children}: Prop) {
-  const {data, error, loading} = useFetchSemaphore<Semaphore>(
-    "getSemaphoreAccountData"
-  );
+  const {data, error, loading, getSemaphoreCredit} =
+    useFetchSemaphore<Semaphore>("getSemaphoreAccountData");
 
   return (
-    <SemaphoreContext.Provider value={{semaphoreData: data, error, loading}}>
+    <SemaphoreContext.Provider
+      value={{
+        semaphoreCredits: data?.balance,
+        error,
+        loading,
+        getSemaphoreCredit,
+      }}
+    >
       {children}
     </SemaphoreContext.Provider>
   );
@@ -31,7 +38,8 @@ interface Semaphore {
 }
 
 interface SemaphoreContextType {
-  semaphoreData: Semaphore | null;
+  semaphoreCredits: number | undefined;
   error: string | null;
   loading: boolean;
+  getSemaphoreCredit: () => Promise<void>;
 }

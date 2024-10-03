@@ -381,7 +381,7 @@ export default function RecordKeeping() {
         </div>
         {records.length === 0 ? (
           <div className="flex flex-col items-center justify-center pt-16">
-            <h1 className="text-lg font-bold text-red-500 md:text-xl lg:text-2xl xl:text-3xl">
+            <h1 className="text-lg font-bold text-center text-red-500 md:text-xl lg:text-2xl xl:text-3xl">
               Oops! No Record Available
             </h1>
             <img
