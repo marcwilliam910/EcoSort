@@ -49,6 +49,7 @@ export default function useFetchSemaphore<T>(functionName: string) {
       setLoading(false);
     }
   }, [functionName]);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {

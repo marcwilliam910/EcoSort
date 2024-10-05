@@ -1,16 +1,31 @@
 import "react-circular-progressbar/dist/styles.css";
-import {useContext} from "react";
+import {useContext, useEffect} from "react";
 import {BiLoader} from "react-icons/bi";
 import {SensorLocationContext} from "@/contexts/SensorLocationContextProvider";
 import {Link} from "react-router-dom";
 import location from "@/assets/location.png";
 import add_location from "@/assets/add_location.png";
 import {LocationModalContext} from "@/contexts/LocationModalContextProvider";
+import {auth} from "@/firebase config/firebase";
+import {storeTokenToDB} from "@/firebase config/firebaseMessaging";
 
 export default function Monitor() {
   const {wasteLocationValues, isLoading} = useContext(SensorLocationContext);
   const {setIsLocationModalOpen, setNewLocation} =
     useContext(LocationModalContext);
+
+  useEffect(() => {
+    // Listen for changes in user authentication state
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        // If user is logged in, store FCM token to Firestore
+        storeTokenToDB();
+      }
+    });
+
+    // Cleanup the listener when the component unmounts
+    return () => unsubscribe();
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center gap-8 p-10 sm:gap-10 md:gap-12">

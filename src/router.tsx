@@ -23,6 +23,7 @@ export const router = createBrowserRouter([
           {
             path: ":location",
             element: <WasteValue />,
+            errorElement: <Error />,
           },
         ],
       },
@@ -40,9 +41,5 @@ export const router = createBrowserRouter([
     path: "/login",
     element: <Login />,
     errorElement: <Error />,
-  },
-  {
-    path: "error", // Error route
-    element: <Error />, // This is your error component
   },
 ]);

@@ -1,5 +1,5 @@
 import {useContext, useEffect, useState} from "react";
-import {Link, Navigate, useParams} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import metal from "../../../../assets/metal.png";
 import paper from "../../../../assets/paper.png";
 import bottle from "../../../../assets/bottle.png";
@@ -44,17 +44,20 @@ export default function WasteValue() {
     Bottle: 0,
     Metal: 0,
   });
-  const {location = ""} = useParams();
+  const {location} = useParams();
+  const navigate = useNavigate();
   const {isDarkMode} = useContext(ThemeContext);
   const {isLoading, wasteLocationValues} = useContext(SensorLocationContext);
 
   async function getWasteValues() {
     try {
-      const values = await fetchSingleDocument<GenericValue>(
-        "sensor",
-        location
-      );
-      setWasteValues(values);
+      if (location) {
+        const values = await fetchSingleDocument<GenericValue>(
+          "sensor",
+          location
+        );
+        setWasteValues(values);
+      }
     } catch (e) {
       errorAlert("Error fetching waste location values", isDarkMode);
     }
@@ -70,15 +73,17 @@ export default function WasteValue() {
     }, 15000);
 
     return () => clearInterval(id);
-  }, []);
+  }, [location]);
 
   const wasteValue = wasteLocationValues.find(
-    (waste) => waste.id.toLocaleLowerCase() === location.toLocaleLowerCase()
+    (waste) => waste.id.toLocaleLowerCase() === location?.toLocaleLowerCase()
   );
 
-  if (!wasteValue) {
-    return <Navigate to={"error"} />;
-  }
+  useEffect(() => {
+    if (!wasteValue) {
+      navigate("/error");
+    }
+  }, [wasteValue, location, navigate]);
 
   return (
     <div className="relative flex flex-col justify-center p-10 gap-7 md:gap-y-14">
@@ -96,7 +101,7 @@ export default function WasteValue() {
           </Link>
 
           <h1 className="text-4xl font-extrabold text-center text-transparent bg-gradient-to-r from-[#3B8230] to-[#1e90ff] bg-clip-text md:text-5xl md:mt-6 font-sans dark:from-[#4ca340] dark:to-[#40a0ff] mt-2">
-            {location.toLocaleUpperCase()}
+            {location?.toLocaleUpperCase()}
           </h1>
 
           <div className="flex flex-wrap justify-center gap-10 xl:gap-x-14">

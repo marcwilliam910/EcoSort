@@ -439,7 +439,7 @@ export default function RecordKeeping() {
                 <BiLoader className="size-10 animate-spin md:size-16" />
               </div>
             ) : (
-              <div className="relative flex flex-col overflow-y-auto max-h-[28rem] border border-zinc-400 bg-light-card dark:bg-dark-card dark:border-dark-border transition-colors duration-150">
+              <div className="relative flex flex-col overflow-y-auto max-h-[28rem] border border-zinc-400 bg-light-card dark:bg-dark-card dark:border-dark-border transition-colors duration-150 rounded-xl">
                 <div className="sticky top-0 left-0 grid p-2 text-[.80rem] font-bold bg-light-primary text-white grid-cols-tableDefault place-items-center sm:text-base md:text-lg md:font-extrabold dark:bg-dark-primaryFocusBG/30">
                   <h2>Type</h2>
                   <h2>Weight</h2>
@@ -521,8 +521,6 @@ const TableRow = memo(function TableRow({
   onEdit,
   id,
 }: TableRowProps) {
-  console.log("Render for TableRow");
-
   return (
     <div className="grid py-2 text-xs text-center duration-150 grid-cols-tableDefault place-items-center sm:text-sm md:text-base hover:bg-zinc-200 dark:hover:bg-dark-primaryHover">
       <p>{type}</p>

@@ -76,8 +76,6 @@ const DynamicChart = memo(function DynamicChart({
     setTotalWasteValue(displayTotal);
   }, [values]);
 
-  console.log("Render for Dynamic Chart");
-
   return (
     <div className="flex flex-col items-center justify-center sm:min-w-full gap-3 cursor-pointer py-14 shadow-2xl h-[22rem] px-5 md:w-80 xl:w-96 2xl:w-[29rem] rounded-xl bg-light-card dark:bg-dark-card transition-colors duration-150">
       <div>
@@ -161,8 +159,6 @@ export const LineChart = memo(function LineChart({
   const [total, setTotal] = useState("");
 
   const {isDarkMode} = useContext(ThemeContext);
-
-  console.log("Render for Line Chart");
 
   useEffect(() => {
     let totalValue = 0;

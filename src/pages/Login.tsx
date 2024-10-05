@@ -12,6 +12,7 @@ import {
 import {useNavigate} from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import ForgotPassword from "../components/Login/ForgotPassword";
+import {AiOutlineEye, AiOutlineEyeInvisible} from "react-icons/ai";
 
 interface FormState {
   email: string;
@@ -124,6 +125,7 @@ function LoginForm({
   isChecked,
   setIsChecked,
 }: LoginFormProps) {
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   return (
     <form
       className="flex flex-col gap-5 p-5 text-white bg-transparent w-72 backdrop-blur-md backdrop-brightness-50 lg:py-8 lg:w-80 "
@@ -153,6 +155,8 @@ function LoginForm({
         value={userForm.password}
         onChange={handleUserForm}
         error={error === "password"}
+        showPassword={showPassword}
+        togglePassword={setShowPassword}
       />
 
       <p
@@ -189,23 +193,45 @@ function LoginForm({
   );
 }
 
-function Input({type, label, value, onChange, error}: InputProps) {
+function Input({
+  type,
+  label,
+  value,
+  onChange,
+  error,
+  showPassword,
+  togglePassword,
+}: InputProps) {
   return (
     <div className="space-y-1">
       <label htmlFor={label} className="text-sm lg:text-base">
         {label}
       </label>
-      <input
-        type={type}
-        required
-        className={`w-full p-1.5 px-3 rounded-md bg-transparent border outline-none border-white ${
-          error && "border-red-500"
-        }`}
-        name={type}
-        value={value}
-        onChange={onChange}
-        autoComplete="on"
-      />
+      <div className="relative flex items-center">
+        <input
+          type={type == "email" ? "email" : showPassword ? "text" : "password"}
+          required
+          className={`w-full p-1.5 px-3 rounded-md bg-transparent border outline-none border-white ${
+            error && "border-red-500"
+          }`}
+          name={type}
+          value={value}
+          onChange={onChange}
+          autoComplete="on"
+        />
+        {label.toLocaleLowerCase() === "password" && togglePassword && (
+          <div
+            className="absolute right-3 "
+            onClick={() => togglePassword(!showPassword)}
+          >
+            {showPassword ? (
+              <AiOutlineEye className="size-5" />
+            ) : (
+              <AiOutlineEyeInvisible className="size-5" />
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -216,4 +242,6 @@ interface InputProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   error: boolean;
+  showPassword?: boolean;
+  togglePassword?: (showPassword: boolean) => void;
 }

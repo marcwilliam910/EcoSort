@@ -1,9 +1,9 @@
-import { sendPasswordResetEmail } from "firebase/auth";
-import { auth } from "../../firebase config/firebase";
-import { useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import {sendPasswordResetEmail} from "firebase/auth";
+import {auth} from "../../firebase config/firebase";
+import {useState} from "react";
+import {toast, ToastContainer} from "react-toastify";
 
-export default function ForgotPassword({ onBack }: ForgotPasswordProps) {
+export default function ForgotPassword({onBack}: ForgotPasswordProps) {
   const [email, setEmail] = useState<string>("");
   const [error, setError] = useState(null);
 
@@ -77,7 +77,7 @@ export default function ForgotPassword({ onBack }: ForgotPasswordProps) {
           </p>
           <button
             type="submit"
-            className="px-2 py-1 duration-150 bg-green-500 hover:bg-green-600"
+            className="px-2 py-1 text-sm duration-150 bg-green-500 md:text-base hover:bg-green-600"
           >
             Reset
           </button>

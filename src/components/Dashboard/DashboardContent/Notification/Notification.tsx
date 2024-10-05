@@ -217,7 +217,7 @@ export default function Notification() {
   }, [semaphoreCredits]);
 
   useEffect(() => {
-    if (contacts.length === 0) {
+    if (contacts.length === 0 && !loading) {
       updatePermissionWhenNoContact(false);
     }
   }, [contacts]);
@@ -304,7 +304,7 @@ export default function Notification() {
               isSmsEnabled ? "" : "opacity-20 cursor-not-allowed"
             }`}
           >
-            <div className="relative flex flex-col overflow-y-auto max-h-[28rem] border border-zinc-400 bg-light-card w-full dark:bg-dark-card dark:border-dark-border">
+            <div className="relative flex flex-col overflow-y-auto max-h-[28rem] border border-zinc-400 bg-light-card w-full dark:bg-dark-card dark:border-dark-border rounded-lg">
               <div className="sticky top-0 left-0 grid p-2 text-[.80rem] font-bold bg-light-primary text-white grid-cols-4 place-items-center sm:text-base md:text-lg md:font-extrabold dark:bg-dark-primaryFocusBG/30 transition-colors duration-150">
                 <h2>Name</h2>
                 <h2>Number</h2>

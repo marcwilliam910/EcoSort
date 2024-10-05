@@ -10,7 +10,6 @@ export default defineConfig({
     },
   },
   server: {
-    host: true, // This is equivalent to '0.0.0.0'
-    port: 3000, // You can change this to any port you prefer
+    host: true,
   },
 });

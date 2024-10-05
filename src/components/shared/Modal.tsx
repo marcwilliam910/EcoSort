@@ -2,6 +2,7 @@ import {IoClose} from "react-icons/io5";
 import {
   addData,
   addDocumentInCollection,
+  fetchData,
   updateData,
 } from "../../firebase config/firebaseCRUD";
 import {useContext, useState} from "react";
@@ -71,6 +72,20 @@ export default function Modal<T extends DocumentData>({
         await updateData(collectionName, formData.id, formData.data);
         message = "Record updated successfully";
       } else if (title === "Location" && documentName) {
+        const locations = await fetchData<DocumentType>("sensor");
+        const isLocationExisited = locations.find(
+          (location) =>
+            location.id.toLowerCase() === documentName.toLocaleLowerCase()
+        );
+
+        if (isLocationExisited) {
+          errorAlert(
+            "Location already exists. Please enter a unique location name.",
+            isDarkMode
+          );
+          return;
+        }
+
         await addDocumentInCollection(
           collectionName,
           documentName.toLocaleLowerCase(),
