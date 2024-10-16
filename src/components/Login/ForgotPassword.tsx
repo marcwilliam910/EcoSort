@@ -2,13 +2,16 @@ import {sendPasswordResetEmail} from "firebase/auth";
 import {auth} from "../../firebase config/firebase";
 import {useState} from "react";
 import {toast, ToastContainer} from "react-toastify";
+import {BiLoader} from "react-icons/bi";
 
 export default function ForgotPassword({onBack}: ForgotPasswordProps) {
   const [email, setEmail] = useState<string>("");
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   async function resetPassword() {
     try {
+      setLoading(true);
       setError(null);
       await sendPasswordResetEmail(auth, email);
       toast.success("Please check your gmail to reset your password", {
@@ -21,6 +24,8 @@ export default function ForgotPassword({onBack}: ForgotPasswordProps) {
     } catch (error: any) {
       setError(error.code);
       console.log(error.code);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -47,7 +52,7 @@ export default function ForgotPassword({onBack}: ForgotPasswordProps) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               id="email"
-              className={`w-full p-1.5 px-3 rounded-md text-base bg-transparent border outline-none mt-2 ${
+              className={`w-full p-1.5 px-3 rounded-md text-base bg-transparent border outline-none mt-2 border-white ${
                 error && "border-red-500"
               }`}
             />
@@ -77,9 +82,9 @@ export default function ForgotPassword({onBack}: ForgotPasswordProps) {
           </p>
           <button
             type="submit"
-            className="px-2 py-1 text-sm duration-150 bg-green-500 md:text-base hover:bg-green-600"
+            className="flex items-center justify-center w-16 h-8 text-sm duration-150 bg-green-500 md:text-base hover:bg-green-600"
           >
-            Reset
+            {loading ? <BiLoader className="size-6 animate-spin" /> : "Reset"}
           </button>
         </div>
       </form>

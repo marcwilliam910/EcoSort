@@ -5,7 +5,7 @@ import Monitor from "./components/Dashboard/DashboardContent/Monitoring/Monitor"
 import RecordKeeping from "./components/Dashboard/DashboardContent/RecordKeeping/RecordKeeping";
 import Notification from "./components/Dashboard/DashboardContent/Notification/Notification";
 import Error from "./pages/Error";
-import WasteValue from "./components/Dashboard/DashboardContent/WasteValue/WasteValue";
+import WasteValue from "./components/Dashboard/DashboardContent/Monitoring/WasteValue/WasteValue";
 
 export const router = createBrowserRouter([
   {

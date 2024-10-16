@@ -1,4 +1,4 @@
-import {doc, serverTimestamp, setDoc} from "firebase/firestore";
+import {arrayUnion, doc, serverTimestamp, setDoc} from "firebase/firestore";
 import {getToken, onMessage} from "firebase/messaging";
 import {auth, db, messaging} from "./firebase";
 import {warningToast} from "@/utils/Toast";
@@ -20,10 +20,16 @@ export async function storeTokenToDB() {
       const token = await getToken(messaging, {vapidKey: vapidKey});
 
       if (token) {
-        await setDoc(doc(db, "fcmTokens", userUID), {
-          token,
-          createdAt: serverTimestamp(),
-        });
+        await setDoc(
+          doc(db, "fcmTokens", userUID),
+          {
+            tokens: arrayUnion(token),
+            createdAt: serverTimestamp(),
+          },
+          {
+            merge: true,
+          }
+        );
 
         onMessage(messaging, (payload) => {
           warningToast(payload.notification?.body);

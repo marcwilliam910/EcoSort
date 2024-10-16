@@ -13,6 +13,9 @@ import {useNavigate} from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import ForgotPassword from "../components/Login/ForgotPassword";
 import {AiOutlineEye, AiOutlineEyeInvisible} from "react-icons/ai";
+import {BiLoader} from "react-icons/bi";
+import gsap from "gsap";
+import {useGSAP} from "@gsap/react";
 
 interface FormState {
   email: string;
@@ -26,6 +29,7 @@ export default function Login() {
     password: "",
   });
   const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   const [isResetting, setIsResetting] = useState<boolean>(false);
   const [isChecked, setIsChecked] = useState<boolean>(false);
 
@@ -37,6 +41,7 @@ export default function Login() {
     e.preventDefault();
 
     try {
+      setLoading(true);
       await setPersistence(
         auth,
         isChecked ? browserLocalPersistence : browserSessionPersistence
@@ -57,6 +62,8 @@ export default function Login() {
       } else {
         setError("An error occurred. Please try again.");
       }
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -79,16 +86,37 @@ export default function Login() {
     setIsResetting(!isResetting);
   }
 
+  useGSAP(() => {
+    const tl = gsap.timeline();
+
+    tl.from("#logo", {
+      delay: 2,
+      duration: 2,
+      scale: 1.8,
+      ease: "expo",
+      y: "150%",
+    }).to(
+      "#overlay",
+      {
+        opacity: 0,
+        pointerEvents: "none",
+        ease: "power2.inOut",
+      },
+      "-=0.5"
+    );
+  }, []);
+
   return (
     <div
       className="flex flex-col items-center justify-center min-h-screen gap-6 bg-center bg-cover lg:gap-12"
       style={{backgroundImage: `url(${digitalized})`}}
     >
-      {" "}
+      <div id="overlay" className="absolute inset-0 z-10 bg-black/90"></div>
       <img
         src={logo}
         alt="Yes-O Logo"
-        className="object-cover rounded-full size-28 lg:size-36"
+        id="logo"
+        className="z-20 object-cover border rounded-full size-28 lg:size-36"
       />
       {isResetting ? (
         <ForgotPassword onBack={handleForgotPasswordClick} />
@@ -101,6 +129,7 @@ export default function Login() {
           onForgotPasswordClick={handleForgotPasswordClick}
           isChecked={isChecked}
           setIsChecked={setIsChecked}
+          loading={loading}
         />
       )}
     </div>
@@ -115,6 +144,7 @@ interface LoginFormProps {
   onForgotPasswordClick: () => void;
   isChecked: boolean;
   setIsChecked: (isChecked: boolean) => void;
+  loading: boolean;
 }
 function LoginForm({
   handleLogin,
@@ -124,6 +154,7 @@ function LoginForm({
   onForgotPasswordClick,
   isChecked,
   setIsChecked,
+  loading,
 }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   return (
@@ -185,9 +216,9 @@ function LoginForm({
       </div>
       <button
         type="submit"
-        className="p-2 mt-2 font-bold duration-150 bg-green-500 hover:bg-green-600"
+        className="flex items-center justify-center p-2 mt-2 font-bold duration-150 bg-green-500 hover:bg-green-600"
       >
-        Login
+        {loading ? <BiLoader className="size-6 animate-spin" /> : "Login"}
       </button>
     </form>
   );

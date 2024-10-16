@@ -1,8 +1,8 @@
 import {useContext, useEffect, useState} from "react";
 import {Link, useNavigate, useParams} from "react-router-dom";
-import metal from "../../../../assets/metal.png";
-import paper from "../../../../assets/paper.png";
-import bottle from "../../../../assets/bottle.png";
+import metal from "@/assets/metal.png";
+import paper from "@/assets/paper.png";
+import bottle from "@/assets/bottle.png";
 import Chart from "./Chart";
 import {SensorLocationContext} from "@/contexts/SensorLocationContextProvider";
 import {IoChevronBackOutline} from "react-icons/io5";
@@ -49,6 +49,27 @@ export default function WasteValue() {
   const {isDarkMode} = useContext(ThemeContext);
   const {isLoading, wasteLocationValues} = useContext(SensorLocationContext);
 
+  const wasteTypes = [
+    {
+      image: images["Paper"],
+      val: wasteValues.Paper,
+      name: displayNames["Paper"],
+      max: 180,
+    },
+    {
+      image: images["Metal"],
+      val: wasteValues.Metal,
+      name: displayNames["Metal"],
+      max: 230,
+    },
+    {
+      image: images["Bottle"],
+      val: wasteValues.Bottle,
+      name: displayNames["Bottle"],
+      max: 105,
+    },
+  ];
+
   async function getWasteValues() {
     try {
       if (location) {
@@ -63,6 +84,10 @@ export default function WasteValue() {
     }
   }
 
+  const wasteValue = wasteLocationValues.find(
+    (waste) => waste.id.toLocaleLowerCase() === location?.toLocaleLowerCase()
+  );
+
   useEffect(() => {
     if (!wasteValue) return;
 
@@ -73,17 +98,13 @@ export default function WasteValue() {
     }, 15000);
 
     return () => clearInterval(id);
-  }, [location]);
-
-  const wasteValue = wasteLocationValues.find(
-    (waste) => waste.id.toLocaleLowerCase() === location?.toLocaleLowerCase()
-  );
+  }, [location, wasteValue]);
 
   useEffect(() => {
-    if (!wasteValue) {
+    if (!wasteValue && !isLoading) {
       navigate("/error");
     }
-  }, [wasteValue, location, navigate]);
+  }, [wasteValue, location, navigate, isLoading]);
 
   return (
     <div className="relative flex flex-col justify-center p-10 gap-7 md:gap-y-14">
@@ -105,21 +126,9 @@ export default function WasteValue() {
           </h1>
 
           <div className="flex flex-wrap justify-center gap-10 xl:gap-x-14">
-            <Chart
-              image={images["Paper"]}
-              val={wasteValues.Paper}
-              name={displayNames["Paper"]}
-            />
-            <Chart
-              image={images["Metal"]}
-              val={wasteValues.Metal}
-              name={displayNames["Metal"]}
-            />
-            <Chart
-              image={images["Bottle"]}
-              val={wasteValues.Bottle}
-              name={displayNames["Bottle"]}
-            />
+            {wasteTypes.map((waste) => (
+              <Chart {...waste} key={waste.name} />
+            ))}
           </div>
         </>
       )}

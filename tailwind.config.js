@@ -17,6 +17,9 @@ export default {
       fontFamily: {
         title: "Noto Serif",
       },
+      boxShadow: {
+        glow: "0px 0px 74px 0px rgba(255,255,255,0.75)",
+      },
       colors: {
         light: {
           primary: "#3B8230",

@@ -50,7 +50,7 @@ export default function SensorLocationContextProvider({children}: Prop) {
   const [wasteLocationValues, setWasteLocationValues] = useState(
     initialWasteLocationValue
   );
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const {isDarkMode} = useContext(ThemeContext);
 
   async function getSubMenus() {

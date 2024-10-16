@@ -42,7 +42,7 @@ export default function Sidebar({
   return (
     <>
       <nav
-        className={`fixed top-0 flex flex-col pt-12 p-3 lg:pt-0  items-center w-5/6 h-screen h-dvh gap-2 md:gap-5 lg:gap-8 transition-all duration-150 ease-in-out z-50 sm:w-2/4 md:w-72 lg:sticky bg-light-card dark:bg-dark-card dark:border-none ${
+        className={`fixed top-0 flex flex-col pt-12 p-3 lg:pt-0 items-center w-5/6 h-dvh lg:h-screen  gap-2 md:gap-5 lg:gap-8 transition-all duration-150 ease-in-out z-50 sm:w-2/4 md:w-72 lg:sticky bg-light-card dark:bg-dark-card dark:border-none ${
           isNavOpen ? "left-0" : "-left-full"
         }`}
       >

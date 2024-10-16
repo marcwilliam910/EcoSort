@@ -26,9 +26,13 @@ async function sendNotification(location: string): Promise<void> {
       .collection("fcmTokens")
       .get();
 
-    const tokens: string[] = tokensSnapshot.docs.map(
-      (doc) => doc.data().token as string
-    );
+    const tokens: string[] = [];
+    tokensSnapshot.docs.forEach((doc) => {
+      const tokenArray = doc.data().tokens as string[];
+      if (tokenArray) {
+        tokens.push(...tokenArray);
+      }
+    });
 
     if (tokens.length > 0) {
       const message: admin.messaging.MulticastMessage = {
@@ -149,9 +153,20 @@ export const checkDocuments = onDocumentUpdated(
 
     // Fields to check
     const fields = ["Paper", "Metal", "Bottle"];
+    const max: {[key: string]: number} = {
+      "Paper": 180,
+      "Bottle": 105,
+      "Metal": 230,
+    };
 
     for (const field of fields) {
-      if (afterData[field] > 90 && beforeData[field] + 3 <= afterData[field]) {
+      if (afterData[field] > max[field]) {
+        console.warn(`${field} exceeds maximum value!`);
+        continue; // Skip further processing for this field
+      }
+
+      const percentage = Math.floor((afterData[field] / max[field]) * 100);
+      if (percentage > 90 && beforeData[field] + 20 <= afterData[field]) {
         const smsPermission = await checkSmsPermission();
         if (smsPermission) {
           const apikey = semaphoreApiKey.value();

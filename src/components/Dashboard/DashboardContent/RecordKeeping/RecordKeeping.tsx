@@ -153,7 +153,6 @@ export default function RecordKeeping() {
   }, [months]);
 
   useEffect(() => {
-    // console.log(selectedYear, selectedMonth);
     const yearlySales: YearlyData[] = [];
     const yearlyWeight: YearlyData[] = [];
     const values: YearlyDataValues = {
@@ -162,6 +161,7 @@ export default function RecordKeeping() {
       "Plastic Bottle": 0,
     };
 
+    const currentMonth = monthNames[new Date().getMonth()];
     const currentDataRecords: Record[] = [];
     const monthSet = new Set<string>();
     const yearSet = new Set<string>();
@@ -205,6 +205,11 @@ export default function RecordKeeping() {
       }
     });
 
+    // if the current month has no record, still add to month list
+    // make sure the current month is still included even when no record
+    if (!monthSet.has(currentMonth)) {
+      monthSet.add(currentMonth);
+    }
     // to sort the month name
     const sortedMonth = [...monthSet].sort(
       (a, b) => monthNames.indexOf(a) - monthNames.indexOf(b)
@@ -258,6 +263,11 @@ export default function RecordKeeping() {
 
     setTotalWasteSales(initialSales);
     setTotalWasteWeight(initalWeight);
+
+    // if user delete all the records in specific month, set selected month to current month
+    if (recordToShow.length == 0) {
+      setSelectedMonth(months[months.length - 1]);
+    }
   }, [recordToShow]);
 
   async function readRecord() {
@@ -369,7 +379,7 @@ export default function RecordKeeping() {
           >
             Add New Record
           </button>
-          {records.length != 0 && (
+          {recordToShow.length != 0 && (
             <button
               className="flex items-center gap-0.5 hover:underline text-xs md:text-base md:mr-5 dark:text-dark-text"
               onClick={downloadPdf}
@@ -400,18 +410,6 @@ export default function RecordKeeping() {
                   setValue={setSelectedMonth}
                   data={months}
                 />
-                {/* <select
-                  id="item"
-                  className="py-0.5 border border-black"
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(e.target.value)}
-                >
-                  {months.map((month) => (
-                    <option key={month} value={month}>
-                      {month}
-                    </option>
-                  ))}
-                </select> */}
               </div>
               <div className="flex items-center gap-2 dark:">
                 <label htmlFor="item">Year: </label>
@@ -420,82 +418,86 @@ export default function RecordKeeping() {
                   setValue={setSelectedYear}
                   data={years}
                 />
-                {/* <select
-                  id="item"
-                  className="py-0.5 border border-black"
-                  value={selectedYear}
-                  onChange={(e) => setSelectedYear(e.target.value)}
-                >
-                  {years.map((year) => (
-                    <option key={year} value={year}>
-                      {year}
-                    </option>
-                  ))}
-                </select> */}
               </div>
             </div>
-            {isLoading ? (
-              <div className="grid place-items-center h-52 dark:text-dark-text">
-                <BiLoader className="size-10 animate-spin md:size-16" />
+            {recordToShow.length === 0 ? (
+              <div className="flex flex-col items-center justify-center pt-10 ">
+                <h1 className="text-lg font-bold text-center md:text-xl lg:text-2xl xl:text-3xl">
+                  No Record for{" "}
+                  <span className="text-red-500">{selectedMonth}</span>
+                </h1>
+                <img
+                  src={noData}
+                  alt="No Data Available"
+                  className="size-64 md:size-96"
+                />
               </div>
             ) : (
-              <div className="relative flex flex-col overflow-y-auto max-h-[28rem] border border-zinc-400 bg-light-card dark:bg-dark-card dark:border-dark-border transition-colors duration-150 rounded-xl">
-                <div className="sticky top-0 left-0 grid p-2 text-[.80rem] font-bold bg-light-primary text-white grid-cols-tableDefault place-items-center sm:text-base md:text-lg md:font-extrabold dark:bg-dark-primaryFocusBG/30">
-                  <h2>Type</h2>
-                  <h2>Weight</h2>
-                  <h2>Amount</h2>
-                  <h2>Date</h2>
-                  <h2>Action</h2>
-                </div>
-                <div className="transition-colors duration-150 divide-y-2 text-light-text dark:text-dark-text dark:divide-dark-border">
-                  {recordToShow
-                    .sort(
-                      (a, b) =>
-                        Number(b.data.date.split("-").join("")) -
-                        Number(a.data.date.split("-").join(""))
-                    )
-                    .map((record) => (
-                      <TableRow
-                        key={record.id}
-                        type={record.data.type}
-                        weight={record.data.weight}
-                        amount={record.data.amount}
-                        date={new Date(record.data.date).toDateString()}
-                        onDelete={handleDeleteRecord}
-                        onEdit={handleEditRecord}
-                        id={record.id}
-                      />
-                    ))}
-                </div>
-              </div>
-            )}
+              <>
+                {isLoading ? (
+                  <div className="grid place-items-center h-52 dark:text-dark-text">
+                    <BiLoader className="size-10 animate-spin md:size-16" />
+                  </div>
+                ) : (
+                  <div className="relative flex flex-col overflow-y-auto max-h-[28rem] border border-zinc-400 bg-light-card dark:bg-dark-card dark:border-dark-border transition-colors duration-150 rounded-xl">
+                    <div className="sticky top-0 left-0 grid p-2 text-[.80rem] font-bold bg-light-primary text-white grid-cols-tableDefault place-items-center sm:text-base md:text-lg md:font-extrabold dark:bg-dark-primaryFocusBG/30">
+                      <h2>Type</h2>
+                      <h2>Weight</h2>
+                      <h2>Amount</h2>
+                      <h2>Date</h2>
+                      <h2>Action</h2>
+                    </div>
+                    <div className="transition-colors duration-150 divide-y-2 text-light-text dark:text-dark-text dark:divide-dark-border">
+                      {recordToShow
+                        .sort(
+                          (a, b) =>
+                            Number(b.data.date.split("-").join("")) -
+                            Number(a.data.date.split("-").join(""))
+                        )
+                        .map((record) => (
+                          <TableRow
+                            key={record.id}
+                            type={record.data.type}
+                            weight={record.data.weight}
+                            amount={record.data.amount}
+                            date={new Date(record.data.date).toDateString()}
+                            onDelete={handleDeleteRecord}
+                            onEdit={handleEditRecord}
+                            id={record.id}
+                          />
+                        ))}
+                    </div>
+                  </div>
+                )}
 
-            <div className="grid w-full grid-cols-1 gap-3 pt-10 sm:grid-cols-2 ">
-              <DynamicChart
-                type="pie"
-                values={totalWasteSales}
-                title="Sales"
-                month={selectedMonth}
-                showLabel={true}
-              />
-              <DynamicChart
-                type="bar"
-                values={totalWasteWeight}
-                title="Weight"
-                month={selectedMonth}
-                showLabel={false}
-              />
-              <LineChart
-                year={selectedYear}
-                title={"Sales"}
-                recordData={yearlySalesData}
-              />
-              <LineChart
-                year={selectedYear}
-                title={"Weight"}
-                recordData={yearlyWeightData}
-              />
-            </div>
+                <div className="grid w-full grid-cols-1 gap-3 pt-10 sm:grid-cols-2 ">
+                  <DynamicChart
+                    type="pie"
+                    values={totalWasteSales}
+                    title="Sales"
+                    month={selectedMonth}
+                    showLabel={true}
+                  />
+                  <DynamicChart
+                    type="bar"
+                    values={totalWasteWeight}
+                    title="Weight"
+                    month={selectedMonth}
+                    showLabel={false}
+                  />
+                  <LineChart
+                    year={selectedYear}
+                    title={"Sales"}
+                    recordData={yearlySalesData}
+                  />
+                  <LineChart
+                    year={selectedYear}
+                    title={"Weight"}
+                    recordData={yearlyWeightData}
+                  />
+                </div>
+              </>
+            )}
           </>
         )}
       </div>

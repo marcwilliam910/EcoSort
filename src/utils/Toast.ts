@@ -1,4 +1,4 @@
-import { toast } from "react-toastify";
+import {toast} from "react-toastify";
 
 export function successToast(message: string) {
   toast.success(message, {
@@ -11,7 +11,7 @@ export function successToast(message: string) {
 export function warningToast(message: string = "Error occurred") {
   toast.error(message, {
     position: "top-center",
-    autoClose: false,
+    autoClose: 5000,
     closeOnClick: true,
   });
 }
