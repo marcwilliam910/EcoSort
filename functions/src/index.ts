@@ -153,20 +153,37 @@ export const checkDocuments = onDocumentUpdated(
 
     // Fields to check
     const fields = ["Paper", "Metal", "Bottle"];
-    const max: {[key: string]: number} = {
-      "Paper": 180,
-      "Bottle": 105,
-      "Metal": 230,
+    const fieldConfig: {
+      [key: string]: {
+        max: number;
+        min: number;
+      };
+    } = {
+      Paper: {
+        max: 180,
+        min: 138,
+      },
+      Bottle: {
+        max: 105,
+        min: 73,
+      },
+      Metal: {
+        max: 230,
+        min: 103,
+      },
     };
 
     for (const field of fields) {
-      if (afterData[field] > max[field]) {
+      if (afterData[field] > fieldConfig[field].max) {
         console.warn(`${field} exceeds maximum value!`);
         continue; // Skip further processing for this field
       }
 
-      const percentage = Math.floor((afterData[field] / max[field]) * 100);
-      if (percentage > 90 && beforeData[field] + 20 <= afterData[field]) {
+      const basedZeroVal = afterData[field] - fieldConfig[field].min;
+      const percentage = Math.floor(
+        (basedZeroVal / (fieldConfig[field].max - fieldConfig[field].min)) * 100
+      );
+      if (percentage > 94) {
         const smsPermission = await checkSmsPermission();
         if (smsPermission) {
           const apikey = semaphoreApiKey.value();

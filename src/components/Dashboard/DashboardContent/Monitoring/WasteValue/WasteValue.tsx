@@ -55,18 +55,21 @@ export default function WasteValue() {
       val: wasteValues.Paper,
       name: displayNames["Paper"],
       max: 180,
+      min: 138,
     },
     {
       image: images["Metal"],
       val: wasteValues.Metal,
       name: displayNames["Metal"],
       max: 230,
+      min: 103,
     },
     {
       image: images["Bottle"],
       val: wasteValues.Bottle,
       name: displayNames["Bottle"],
       max: 105,
+      min: 73,
     },
   ];
 

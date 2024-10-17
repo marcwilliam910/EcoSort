@@ -6,13 +6,15 @@ import {
 } from "react-circular-progressbar";
 import {CgDanger} from "react-icons/cg";
 
-export default function Chart({image, val, name, max}: ChartProps) {
+export default function Chart({image, val, name, max, min}: ChartProps) {
   const {getSemaphoreCredit} = useContext(SemaphoreContext);
 
-  let percentage = Math.floor((val / max) * 100);
+  const basedZeroVal = val - min;
+  const percentage = Math.floor((basedZeroVal / (max - min)) * 100);
 
+  console.log(name, percentage);
   useEffect(() => {
-    let percentage = Math.floor((val / max) * 100);
+    let percentage = Math.floor((basedZeroVal / (max - min)) * 100);
 
     if (percentage > 90) getSemaphoreCredit();
   }, [val, max]);
@@ -22,6 +24,12 @@ export default function Chart({image, val, name, max}: ChartProps) {
   else if (percentage > 50) style = "#FFFF00";
   else style = "#00FF00";
 
+  // for chart max value text
+  let displayValue;
+  if (percentage > 100) displayValue = 100;
+  else if (percentage < 0) displayValue = 0;
+  else displayValue = percentage;
+
   return (
     <div className="relative flex flex-col items-center w-56 gap-6 p-6 transition-all duration-150 rounded-lg shadow-2xl bg-light-card dark:bg-dark-card dark:text-dark-text lg:w-60 xl:w-64">
       {percentage > 75 && (
@@ -29,14 +37,15 @@ export default function Chart({image, val, name, max}: ChartProps) {
       )}
       <CircularProgressbarWithChildren
         maxValue={max}
-        value={val}
+        minValue={min}
+        value={min > val ? 0 : val}
         styles={buildStyles({
           pathColor: style,
         })}
       >
         <img className="size-20 xl:size-24" src={image} alt="trash bin" />
         <div>
-          <strong>{percentage < 0 ? "0" : percentage}%</strong> full
+          <strong>{displayValue}%</strong> full
         </div>
       </CircularProgressbarWithChildren>
       <div className="flex flex-col items-center gap-2">
@@ -55,4 +64,5 @@ interface ChartProps {
   image: string;
   name: string;
   max: number;
+  min: number;
 }

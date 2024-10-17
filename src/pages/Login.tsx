@@ -111,7 +111,7 @@ export default function Login() {
       className="flex flex-col items-center justify-center min-h-screen gap-6 bg-center bg-cover lg:gap-12"
       style={{backgroundImage: `url(${digitalized})`}}
     >
-      <div id="overlay" className="absolute inset-0 z-10 bg-black/90"></div>
+      <div id="overlay" className="absolute inset-0 z-10 bg-black/95"></div>
       <img
         src={logo}
         alt="Yes-O Logo"
