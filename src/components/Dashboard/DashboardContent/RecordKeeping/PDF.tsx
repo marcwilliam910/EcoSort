@@ -6,8 +6,8 @@ import {
   StyleSheet,
   Image,
 } from "@react-pdf/renderer";
-import logo from "../../../../assets/iba-logo.png";
-import deped from "../../../../assets/deped.png";
+import logo from "../../../../assets/png/iba-logo.png";
+import deped from "../../../../assets/png/deped.png";
 
 // Define styles
 const styles = StyleSheet.create({
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 25,
     fontWeight: "bold",
-    marginBottom: 30,
+    marginBottom: 25,
     textAlign: "center",
   },
   // table
@@ -177,7 +177,7 @@ export default function PDF({
         </View>
         {/* table */}
         <Text style={styles.titleText}>
-          {month} {year} Waste Data
+          {month} {year} Collected Waste
         </Text>
         <View style={styles.table}>
           <View style={[styles.tableRowHeader, styles.tableHeader]}>

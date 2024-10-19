@@ -12,7 +12,6 @@ export default function Chart({image, val, name, max, min}: ChartProps) {
   const basedZeroVal = val - min;
   const percentage = Math.floor((basedZeroVal / (max - min)) * 100);
 
-  console.log(name, percentage);
   useEffect(() => {
     let percentage = Math.floor((basedZeroVal / (max - min)) * 100);
 
@@ -43,7 +42,10 @@ export default function Chart({image, val, name, max, min}: ChartProps) {
           pathColor: style,
         })}
       >
-        <img className="size-20 xl:size-24" src={image} alt="trash bin" />
+        <picture>
+          <source srcSet={image.webp} type="image/webp" />
+          <img className="size-20 xl:size-24" src={image.png} alt={name} />
+        </picture>
         <div>
           <strong>{displayValue}%</strong> full
         </div>
@@ -61,7 +63,10 @@ export default function Chart({image, val, name, max, min}: ChartProps) {
 
 interface ChartProps {
   val: number;
-  image: string;
+  image: {
+    webp: string;
+    png: string;
+  };
   name: string;
   max: number;
   min: number;

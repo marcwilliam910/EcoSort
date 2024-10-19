@@ -37,9 +37,10 @@ async function sendNotification(location: string): Promise<void> {
     if (tokens.length > 0) {
       const message: admin.messaging.MulticastMessage = {
         tokens,
-        notification: {
-          title: "Project Robert",
+        data: {
+          title: "EcoSort",
           body: `Alert: The bins at ${location.toUpperCase()} are nearing full capacity. Kindly ensure they are emptied soon.`,
+          icon: "https://project-robert-bb066.web.app/logo.png",
         },
       };
 

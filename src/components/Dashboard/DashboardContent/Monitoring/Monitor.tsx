@@ -3,8 +3,10 @@ import {useContext, useEffect} from "react";
 import {BiLoader} from "react-icons/bi";
 import {SensorLocationContext} from "@/contexts/SensorLocationContextProvider";
 import {Link} from "react-router-dom";
-import location from "@/assets/location.png";
-import add_location from "@/assets/add_location.png";
+import location from "@/assets/png/location.png";
+import locationWebp from "@/assets/webp/location.webp";
+import add_location from "@/assets/png/add_location.png";
+import add_locationWebp from "@/assets/webp/add_location.webp";
 import {LocationModalContext} from "@/contexts/LocationModalContextProvider";
 import {auth} from "@/firebase config/firebase";
 import {storeTokenToDB} from "@/firebase config/firebaseMessaging";
@@ -42,11 +44,15 @@ export default function Monitor() {
             {wasteLocationValues.map((value) => (
               <Link key={value.id} to={`/monitor/${value.id}`}>
                 <div className="flex flex-col items-center gap-2 p-4 pt-0 duration-150 rounded-md cursor-pointer min-w-60 bg-light-card hover:scale-105 text-light-text sm:p-6 sm:pt-0 md:p-10 md:pt-0 md:gap-4 dark:bg-dark-card dark:text-dark-text">
-                  <img
-                    src={location}
-                    alt="Location image"
-                    className="size-40 sm:size-44 md:size-56 xl:size-64"
-                  />
+                  <picture>
+                    <source srcSet={locationWebp} type="image/webp" />
+                    <source srcSet={location} type="image/png" />
+                    <img
+                      src={location}
+                      alt="Location image"
+                      className="size-40 sm:size-44 md:size-56 xl:size-64"
+                    />
+                  </picture>
                   <h2 className="text-xl font-bold sm:text-2xl">
                     {value.id.toLocaleUpperCase()}
                   </h2>
@@ -60,11 +66,15 @@ export default function Monitor() {
               }}
             >
               <div className="flex flex-col items-center gap-2 p-4 pt-0 duration-150 rounded-md cursor-pointer min-w-60 bg-light-card hover:scale-105 text-light-text sm:p-6 sm:pt-0 md:p-10 md:pt-0 md:gap-4 dark:bg-dark-card dark:text-dark-text">
-                <img
-                  src={add_location}
-                  alt="Add Location image"
-                  className="size-40 sm:size-44 md:size-56 xl:size-64"
-                />
+                <picture>
+                  <source srcSet={add_locationWebp} type="image/webp" />
+                  <source srcSet={add_location} type="image/png" />
+                  <img
+                    src={add_location}
+                    alt="Add Location image"
+                    className="size-40 sm:size-44 md:size-56 xl:size-64"
+                  />
+                </picture>
                 <h2 className="text-xl font-bold uppercase sm:text-2xl">
                   Add location
                 </h2>

@@ -1,45 +1,108 @@
 import {createBrowserRouter} from "react-router-dom";
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import Monitor from "./components/Dashboard/DashboardContent/Monitoring/Monitor";
-import RecordKeeping from "./components/Dashboard/DashboardContent/RecordKeeping/RecordKeeping";
-import Notification from "./components/Dashboard/DashboardContent/Notification/Notification";
-import Error from "./pages/Error";
-import WasteValue from "./components/Dashboard/DashboardContent/Monitoring/WasteValue/WasteValue";
+import {lazy, Suspense} from "react";
+import ErrorSkeleton from "./components/Skeleton/ErrorSkeleton";
+import {BiLoader} from "react-icons/bi";
+
+const Login = lazy(() => import("./pages/Login"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Monitor = lazy(
+  () => import("./components/Dashboard/DashboardContent/Monitoring/Monitor")
+);
+const RecordKeeping = lazy(
+  () =>
+    import(
+      "./components/Dashboard/DashboardContent/RecordKeeping/RecordKeeping"
+    )
+);
+const Notification = lazy(
+  () =>
+    import("./components/Dashboard/DashboardContent/Notification/Notification")
+);
+const Error = lazy(() => import("./pages/Error"));
+const WasteValue = lazy(
+  () =>
+    import(
+      "./components/Dashboard/DashboardContent/Monitoring/WasteValue/WasteValue"
+    )
+);
+
+function Loader() {
+  return (
+    <div className="grid h-72 place-items-center dark:text-dark-text ">
+      <BiLoader className="size-10 animate-spin md:size-16" />
+    </div>
+  );
+}
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Dashboard />,
-    errorElement: <Error />,
+    element: (
+      <Suspense fallback={<Loader />}>
+        <Dashboard />
+      </Suspense>
+    ),
+    errorElement: (
+      <Suspense fallback={<ErrorSkeleton />}>
+        <Error />
+      </Suspense>
+    ),
     children: [
       {
         index: true,
-        element: <Monitor />,
+        element: (
+          <Suspense fallback={<Loader />}>
+            <Monitor />
+          </Suspense>
+        ),
       },
       {
         path: "monitor",
         children: [
           {
             path: ":location",
-            element: <WasteValue />,
-            errorElement: <Error />,
+            element: (
+              <Suspense fallback={<Loader />}>
+                <WasteValue />
+              </Suspense>
+            ),
+            errorElement: (
+              <Suspense fallback={<ErrorSkeleton />}>
+                <Error />
+              </Suspense>
+            ),
           },
         ],
       },
       {
         path: "records",
-        element: <RecordKeeping />,
+        element: (
+          <Suspense fallback={<Loader />}>
+            <RecordKeeping />
+          </Suspense>
+        ),
       },
       {
         path: "notification",
-        element: <Notification />,
+        element: (
+          <Suspense fallback={<Loader />}>
+            <Notification />
+          </Suspense>
+        ),
       },
     ],
   },
   {
     path: "/login",
-    element: <Login />,
-    errorElement: <Error />,
+    element: (
+      <Suspense fallback={<Loader />}>
+        <Login />
+      </Suspense>
+    ),
+    errorElement: (
+      <Suspense fallback={<ErrorSkeleton />}>
+        <Error />
+      </Suspense>
+    ),
   },
 ]);

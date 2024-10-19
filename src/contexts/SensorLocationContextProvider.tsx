@@ -2,6 +2,8 @@ import {fetchData} from "@/firebase config/firebaseCRUD";
 import {errorAlert} from "@/utils/SweetAlerts";
 import React, {createContext, useContext, useEffect, useState} from "react";
 import {ThemeContext} from "./ThemeContextProvider";
+import {onAuthStateChanged} from "firebase/auth";
+import {auth} from "@/firebase config/firebase";
 
 interface SensorLocationType {
   wasteLocationValues: {
@@ -66,10 +68,12 @@ export default function SensorLocationContextProvider({children}: Prop) {
   }
 
   useEffect(() => {
-    const id = setTimeout(() => {
-      getSubMenus();
-    }, 1000);
-    return () => clearTimeout(id);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        getSubMenus();
+      }
+    });
+    return () => unsubscribe();
   }, []);
 
   return (

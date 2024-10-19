@@ -1,6 +1,8 @@
-import React, {useEffect, useState} from "react";
-import digitalized from "../assets/digitalized.jpg";
-import logo from "../assets/logo.png";
+import React, {lazy, Suspense, useEffect, useState} from "react";
+import digitalized from "../assets/png/digitalized.jpg";
+import digitalizedWebp from "../assets/webp/digitalized.webp";
+import logo from "@/assets/png/logo.png";
+import logoWebp from "@/assets/webp/logo.webp";
 import {auth} from "../firebase config/firebase";
 import {
   browserLocalPersistence,
@@ -11,11 +13,13 @@ import {
 } from "firebase/auth";
 import {useNavigate} from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
-import ForgotPassword from "../components/Login/ForgotPassword";
 import {AiOutlineEye, AiOutlineEyeInvisible} from "react-icons/ai";
 import {BiLoader} from "react-icons/bi";
 import gsap from "gsap";
 import {useGSAP} from "@gsap/react";
+
+// lazy load
+const ForgotPassword = lazy(() => import("../components/Login/ForgotPassword"));
 
 interface FormState {
   email: string;
@@ -107,31 +111,43 @@ export default function Login() {
   }, []);
 
   return (
-    <div
-      className="flex flex-col items-center justify-center min-h-screen gap-6 bg-center bg-cover lg:gap-12"
-      style={{backgroundImage: `url(${digitalized})`}}
-    >
-      <div id="overlay" className="absolute inset-0 z-10 bg-black/95"></div>
-      <img
-        src={logo}
-        alt="Yes-O Logo"
-        id="logo"
-        className="z-20 object-cover border rounded-full size-28 lg:size-36"
-      />
-      {isResetting ? (
-        <ForgotPassword onBack={handleForgotPasswordClick} />
-      ) : (
-        <LoginForm
-          handleLogin={handleLogin}
-          userForm={userForm}
-          error={error}
-          handleUserForm={handleUserForm}
-          onForgotPasswordClick={handleForgotPasswordClick}
-          isChecked={isChecked}
-          setIsChecked={setIsChecked}
-          loading={loading}
+    <div className="flex flex-col items-center justify-center min-h-screen gap-6 bg-center bg-cover lg:gap-12">
+      <picture className="absolute inset-0 w-full h-full">
+        <source srcSet={digitalizedWebp} type="image/webp" />
+        <img
+          src={digitalized}
+          alt="Background"
+          className="object-cover w-full h-full"
         />
-      )}
+      </picture>
+      <div id="overlay" className="absolute inset-0 z-10 bg-black/95"></div>
+      <picture className="z-20 ">
+        <source srcSet={logoWebp} type="image/webp" />
+        <source srcSet={logo} type="image/png" />
+        <img
+          src={logo} // Fallback image if WebP is not supported
+          alt="Yes-O Logo"
+          id="logo"
+          className="object-cover border rounded-full size-28 lg:size-36"
+        />
+      </picture>
+
+      <Suspense fallback={<div>Loading...</div>}>
+        {isResetting ? (
+          <ForgotPassword onBack={handleForgotPasswordClick} />
+        ) : (
+          <LoginForm
+            handleLogin={handleLogin}
+            userForm={userForm}
+            error={error}
+            handleUserForm={handleUserForm}
+            onForgotPasswordClick={handleForgotPasswordClick}
+            isChecked={isChecked}
+            setIsChecked={setIsChecked}
+            loading={loading}
+          />
+        )}
+      </Suspense>
     </div>
   );
 }

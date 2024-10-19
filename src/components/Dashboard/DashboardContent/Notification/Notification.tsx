@@ -18,7 +18,8 @@ import Label from "../../../shared/Label";
 import Input from "../../../shared/Input";
 import {SemaphoreContext} from "@/contexts/SemaphoreContextProvider";
 import {ThemeContext} from "@/contexts/ThemeContextProvider";
-import no_contact from "@/assets/no_contact.png";
+import no_contact from "@/assets/png/no_contact.png";
+import no_contactWebp from "@/assets/webp/no_contact.webp";
 
 const initalForm = {
   id: "",
@@ -282,11 +283,15 @@ export default function Notification() {
             <h1 className="text-lg font-bold text-center text-red-500 md:text-xl lg:text-2xl xl:text-3xl">
               Oops! No Contact Number Available
             </h1>
-            <img
-              src={no_contact}
-              alt="No contact image"
-              className="h-60 md:h-80"
-            />
+            <picture>
+              <source srcSet={no_contactWebp} type="image/webp" />
+              <source srcSet={no_contact} type="image/png" />
+              <img
+                src={no_contact}
+                alt="No contact image"
+                className="h-60 md:h-80"
+              />
+            </picture>
             <button
               className={`px-10 py-2.5 text-sm text-white bg-blue-600 hover:bg-blue-700 md:px-14 md:py-3 md:text-base cursor-pointer lg:text-lg`}
               onClick={() => {

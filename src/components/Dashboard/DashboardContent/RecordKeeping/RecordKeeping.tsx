@@ -6,8 +6,8 @@ import {FaPrint} from "react-icons/fa";
 import {BiLoader} from "react-icons/bi";
 import {FaEdit} from "react-icons/fa";
 import {RiDeleteBin6Fill} from "react-icons/ri";
-import noData from "../../../../assets/no_data-removebg.png";
-import PDF from "./PDF";
+import noData from "@/assets/png/no_data-removebg.png";
+import noDataWebp from "@/assets/webp/no_data-removebg.webp";
 import {pdf} from "@react-pdf/renderer";
 import SelectComponent from "@/components/shadcn/SelectComponent";
 import Label from "@/components/shared/Label";
@@ -318,6 +318,9 @@ export default function RecordKeeping() {
   );
 
   async function downloadPdf() {
+    // Dynamically import the PDF component only when needed
+    const {default: PDF} = await import("./PDF");
+
     const flattenedData = recordToShow.map((record) => record.data);
 
     const blob = await pdf(
@@ -329,6 +332,7 @@ export default function RecordKeeping() {
         totalSales={totalWasteSales}
       />
     ).toBlob();
+
     const url = URL.createObjectURL(blob);
     window.open(url, "_blank"); // Open PDF in a new tab for viewing
     URL.revokeObjectURL(url); // Clean up
@@ -394,11 +398,15 @@ export default function RecordKeeping() {
             <h1 className="text-lg font-bold text-center text-red-500 md:text-xl lg:text-2xl xl:text-3xl">
               Oops! No Record Available
             </h1>
-            <img
-              src={noData}
-              alt="No Data Available"
-              className="size-64 md:size-96"
-            />
+            <picture>
+              <source srcSet={noDataWebp} type="image/webp" />
+              <source srcSet={noData} type="image/png" />
+              <img
+                src={noData}
+                alt="No Data Available"
+                className="size-64 md:size-96"
+              />
+            </picture>
           </div>
         ) : (
           <>
@@ -426,11 +434,15 @@ export default function RecordKeeping() {
                   No Record for{" "}
                   <span className="text-red-500">{selectedMonth}</span>
                 </h1>
-                <img
-                  src={noData}
-                  alt="No Data Available"
-                  className="size-64 md:size-96"
-                />
+                <picture>
+                  <source srcSet={noDataWebp} type="image/webp" />
+                  <source srcSet={noData} type="image/png" />
+                  <img
+                    src={noData}
+                    alt="No Data Available"
+                    className="size-64 md:size-96"
+                  />
+                </picture>
               </div>
             ) : (
               <>

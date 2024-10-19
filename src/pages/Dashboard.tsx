@@ -1,6 +1,4 @@
 import {useState, useEffect, useContext} from "react";
-import SideBar from "../components/Dashboard/SideBar";
-import DashboardContent from "../components/Dashboard/DashboardContent/DashboardContent";
 import {successToast} from "../utils/Toast";
 import {ToastContainer} from "react-toastify";
 import {onAuthStateChanged} from "firebase/auth";
@@ -9,10 +7,13 @@ import {useLocation, useNavigate} from "react-router-dom";
 import {storeTokenToDB} from "@/firebase config/firebaseMessaging";
 import ThemeContextProvider from "@/contexts/ThemeContextProvider";
 import SensorLocationContextProvider from "@/contexts/SensorLocationContextProvider";
+import {LocationModalContext} from "@/contexts/LocationModalContextProvider";
+
+import SideBar from "../components/Dashboard/SideBar";
+import DashboardContent from "../components/Dashboard/DashboardContent/DashboardContent";
+import Modal from "@/components/shared/Modal";
 import Label from "@/components/shared/Label";
 import Input from "@/components/shared/Input";
-import Modal from "@/components/shared/Modal";
-import {LocationModalContext} from "@/contexts/LocationModalContextProvider";
 
 const defaultField = {
   Paper: 0,
@@ -57,7 +58,6 @@ export default function Dashboard() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        // Delay the token storage slightly to ensure Firebase is fully initialized
         setTimeout(() => {
           storeTokenToDB().catch((error) => {
             console.error("Error in storeTokenToDB:", error);
@@ -106,6 +106,7 @@ export default function Dashboard() {
             setIsLocationModalOpen={setIsLocationModalOpen}
             setNewLocation={setNewLocation}
           />
+
           <div className="relative w-full lg:flex-1">
             <DashboardContent onToggleNav={toggleNav} />
           </div>

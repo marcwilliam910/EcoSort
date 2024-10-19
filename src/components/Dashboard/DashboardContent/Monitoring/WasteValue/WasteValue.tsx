@@ -1,8 +1,11 @@
 import {useContext, useEffect, useState} from "react";
 import {Link, useNavigate, useParams} from "react-router-dom";
-import metal from "@/assets/metal.png";
-import paper from "@/assets/paper.png";
-import bottle from "@/assets/bottle.png";
+import metal from "@/assets/png/metal.png";
+import paper from "@/assets/png/paper.png";
+import bottle from "@/assets/png/bottle.png";
+import metalWebp from "@/assets/webp/metal.webp";
+import paperWebp from "@/assets/webp/paper.webp";
+import bottleWebp from "@/assets/webp/bottle.webp";
 import Chart from "./Chart";
 import {SensorLocationContext} from "@/contexts/SensorLocationContextProvider";
 import {IoChevronBackOutline} from "react-icons/io5";
@@ -22,9 +25,9 @@ const displayNames: Names = {
   Bottle: "Plastic Bottle",
 };
 const images = {
-  Metal: metal,
-  Paper: paper,
-  Bottle: bottle,
+  Metal: {png: metal, webp: metalWebp},
+  Paper: {png: paper, webp: paperWebp},
+  Bottle: {png: bottle, webp: bottleWebp},
 };
 
 interface WasteValue extends GenericValue {
