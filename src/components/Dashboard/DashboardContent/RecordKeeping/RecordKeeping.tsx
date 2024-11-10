@@ -1,7 +1,22 @@
-import {useEffect, useState, memo, useCallback, useContext} from "react";
+import {
+  useEffect,
+  useState,
+  memo,
+  useCallback,
+  useContext,
+  lazy,
+  Suspense,
+} from "react";
 import {deleteData, fetchData} from "../../../../firebase config/firebaseCRUD";
 import {deleteAlert, errorAlert} from "../../../../utils/SweetAlerts";
-import DynamicChart, {LineChart} from "./Charts";
+// import DynamicChart, {LineChart} from "./Charts";
+const LineChart = lazy(() =>
+  import("./Charts").then((module) => ({default: module.LineChart}))
+);
+const DynamicChart = lazy(() =>
+  import("./Charts").then((module) => ({default: module.DynamicChart}))
+);
+
 import {FaPrint} from "react-icons/fa";
 import {BiLoader} from "react-icons/bi";
 import {FaEdit} from "react-icons/fa";
@@ -348,6 +363,14 @@ export default function RecordKeeping() {
     });
   }
 
+  function Loader() {
+    return (
+      <div className="grid h-72 place-items-center dark:text-dark-text ">
+        <BiLoader className="size-10 animate-spin md:size-16" />
+      </div>
+    );
+  }
+
   return (
     <div className="p-5">
       {isModalOpen && (
@@ -447,9 +470,7 @@ export default function RecordKeeping() {
             ) : (
               <>
                 {isLoading ? (
-                  <div className="grid place-items-center h-52 dark:text-dark-text">
-                    <BiLoader className="size-10 animate-spin md:size-16" />
-                  </div>
+                  <Loader />
                 ) : (
                   <div className="relative flex flex-col overflow-y-auto max-h-[28rem] border border-zinc-400 bg-light-card dark:bg-dark-card dark:border-dark-border transition-colors duration-150 rounded-xl">
                     <div className="sticky top-0 left-0 grid p-2 text-[.80rem] font-bold bg-light-primary text-white grid-cols-tableDefault place-items-center sm:text-base md:text-lg md:font-extrabold dark:bg-dark-primaryFocusBG/30">
@@ -482,32 +503,34 @@ export default function RecordKeeping() {
                   </div>
                 )}
 
-                <div className="grid w-full grid-cols-1 gap-3 pt-10 sm:grid-cols-2 ">
-                  <DynamicChart
-                    type="pie"
-                    values={totalWasteSales}
-                    title="Sales"
-                    month={selectedMonth}
-                    showLabel={true}
-                  />
-                  <DynamicChart
-                    type="bar"
-                    values={totalWasteWeight}
-                    title="Weight"
-                    month={selectedMonth}
-                    showLabel={false}
-                  />
-                  <LineChart
-                    year={selectedYear}
-                    title={"Sales"}
-                    recordData={yearlySalesData}
-                  />
-                  <LineChart
-                    year={selectedYear}
-                    title={"Weight"}
-                    recordData={yearlyWeightData}
-                  />
-                </div>
+                <Suspense fallback={<Loader />}>
+                  <div className="grid w-full grid-cols-1 gap-3 pt-10 sm:grid-cols-2 ">
+                    <DynamicChart
+                      type="pie"
+                      values={totalWasteSales}
+                      title="Sales"
+                      month={selectedMonth}
+                      showLabel={true}
+                    />
+                    <DynamicChart
+                      type="bar"
+                      values={totalWasteWeight}
+                      title="Weight"
+                      month={selectedMonth}
+                      showLabel={false}
+                    />
+                    <LineChart
+                      year={selectedYear}
+                      title={"Sales"}
+                      recordData={yearlySalesData}
+                    />
+                    <LineChart
+                      year={selectedYear}
+                      title={"Weight"}
+                      recordData={yearlyWeightData}
+                    />
+                  </div>
+                </Suspense>
               </>
             )}
           </>

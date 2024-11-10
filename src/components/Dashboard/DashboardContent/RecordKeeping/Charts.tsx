@@ -47,7 +47,7 @@ interface YearlyDataValues {
   "Plastic Bottle": number;
 }
 
-const DynamicChart = memo(function DynamicChart({
+export const DynamicChart = memo(function DynamicChart({
   type,
   values,
   title,
@@ -142,8 +142,6 @@ const DynamicChart = memo(function DynamicChart({
     </div>
   );
 });
-
-export default DynamicChart;
 
 interface LineChartProps {
   year: string;

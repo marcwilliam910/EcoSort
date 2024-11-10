@@ -38,7 +38,13 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <Suspense fallback={<Loader />}>
+      <Suspense
+        fallback={
+          <div className="grid h-screen place-items-center dark:text-dark-text ">
+            <BiLoader className="size-10 animate-spin md:size-16" />
+          </div>
+        }
+      >
         <Dashboard />
       </Suspense>
     ),
@@ -95,7 +101,13 @@ export const router = createBrowserRouter([
   {
     path: "/login",
     element: (
-      <Suspense fallback={<Loader />}>
+      <Suspense
+        fallback={
+          <div className="grid h-screen place-items-center dark:text-dark-text ">
+            <BiLoader className="size-10 animate-spin md:size-16" />
+          </div>
+        }
+      >
         <Login />
       </Suspense>
     ),

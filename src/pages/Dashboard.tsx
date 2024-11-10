@@ -8,21 +8,25 @@ import {storeTokenToDB} from "@/firebase config/firebaseMessaging";
 import ThemeContextProvider from "@/contexts/ThemeContextProvider";
 import SensorLocationContextProvider from "@/contexts/SensorLocationContextProvider";
 import {LocationModalContext} from "@/contexts/LocationModalContextProvider";
-
 import SideBar from "../components/Dashboard/SideBar";
 import DashboardContent from "../components/Dashboard/DashboardContent/DashboardContent";
 import Modal from "@/components/shared/Modal";
 import Label from "@/components/shared/Label";
 import Input from "@/components/shared/Input";
+import {BiLoader} from "react-icons/bi";
 
 const defaultField = {
   Paper: 0,
+  PaperValid: true,
   Metal: 0,
+  MetalValid: true,
   Bottle: 0,
+  BottleValid: true,
 };
 
 export default function Dashboard() {
   const [isNavOpen, setIsNavOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
   const location = useLocation();
   const fromLogin = location.state?.fromLogin;
@@ -50,6 +54,7 @@ export default function Dashboard() {
       if (!user) {
         navigate("/login", {replace: true});
       }
+      setLoading(false);
     });
 
     return () => unsubscribe();
@@ -69,6 +74,14 @@ export default function Dashboard() {
     return () => unsubscribe();
   }, []);
 
+  if (loading) {
+    return (
+      <div className="grid h-screen place-items-center dark:text-dark-text ">
+        <BiLoader className="size-10 animate-spin md:size-16" />
+      </div>
+    );
+  }
+
   return (
     <SensorLocationContextProvider>
       <ThemeContextProvider>
@@ -77,7 +90,7 @@ export default function Dashboard() {
           autoClose={4000}
           theme="colored"
           hideProgressBar={true}
-        />
+        ></ToastContainer>
         <main className="relative lg:flex">
           {isLocationModalOpen && (
             <Modal

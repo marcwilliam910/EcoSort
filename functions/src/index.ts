@@ -40,7 +40,7 @@ async function sendNotification(location: string): Promise<void> {
         data: {
           title: "EcoSort",
           body: `Alert: The bins at ${location.toUpperCase()} are nearing full capacity. Kindly ensure they are emptied soon.`,
-          icon: "https://project-robert-bb066.web.app/logo.png",
+          icon: "https://project-robert-bb066.web.app/notifLogo.png",
         },
       };
 
@@ -148,12 +148,23 @@ export const checkDocuments = onDocumentUpdated(
     const afterData = event.data?.after?.data();
 
     if (!afterData || !beforeData) {
-      console.log("No data found after the update.");
       return;
     }
 
+    // Check each field to find the one that changed
+    let changedField: {name: string; value: number} = {
+      name: "",
+      value: 0,
+    };
+    Object.keys(afterData).forEach((key) => {
+      if (beforeData[key] !== afterData[key]) {
+        changedField = {name: key, value: afterData[key]};
+      }
+    });
+
+    if (changedField.name == "") return;
+
     // Fields to check
-    const fields = ["Paper", "Metal", "Bottle"];
     const fieldConfig: {
       [key: string]: {
         max: number;
@@ -174,26 +185,52 @@ export const checkDocuments = onDocumentUpdated(
       },
     };
 
-    for (const field of fields) {
-      if (afterData[field] > fieldConfig[field].max) {
-        console.warn(`${field} exceeds maximum value!`);
-        continue; // Skip further processing for this field
-      }
+    // early return if the bin value is below the minimum
+    if (changedField.value < fieldConfig[changedField.name].min) {
+      return;
+    }
 
-      const basedZeroVal = afterData[field] - fieldConfig[field].min;
-      const percentage = Math.floor(
-        (basedZeroVal / (fieldConfig[field].max - fieldConfig[field].min)) * 100
-      );
-      if (percentage > 94) {
-        const smsPermission = await checkSmsPermission();
-        if (smsPermission) {
-          const apikey = semaphoreApiKey.value();
-          const contactNumbers = await getContacts();
-          await sendSMS(locationName, contactNumbers, apikey);
-        }
-        await sendNotification(locationName);
-        break; // Stop the loop once a field satisfies the condition
+    const docRef = db.collection("sensorPercentage").doc(changedField.name);
+
+    // if the value decreases (means its emptied), update the last value
+    const average = Math.floor(
+      (fieldConfig[changedField.name].max +
+        fieldConfig[changedField.name].min) /
+        2
+    );
+    if (changedField.value < average) {
+      await docRef.set({
+        lastValue: changedField.value,
+      });
+    }
+
+    // get the last value that triggers the notification
+    let lastValue = 0;
+    const doc = await docRef.get();
+    if (doc.exists) {
+      lastValue = doc.data()?.lastValue;
+    }
+
+    // get the percentage
+    const basedZeroMin =
+      changedField.value - fieldConfig[changedField.name].min;
+    const range =
+      fieldConfig[changedField.name].max - fieldConfig[changedField.name].min;
+    const percentage = Math.floor((basedZeroMin / range) * 100);
+
+    if (percentage > 90 && lastValue + 10 < changedField.value) {
+      const smsPermission = await checkSmsPermission();
+      if (smsPermission) {
+        const apikey = semaphoreApiKey.value();
+        const contactNumbers = await getContacts();
+        await sendSMS(locationName, contactNumbers, apikey);
       }
+      await sendNotification(locationName);
+
+      // update the last value in firestore
+      await docRef.set({
+        lastValue: changedField.value,
+      });
     }
   }
 );

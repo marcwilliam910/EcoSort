@@ -5,7 +5,7 @@ import {
   updateData,
   updateSingleData,
 } from "@/firebase config/firebaseCRUD";
-import {warningToast} from "@/utils/Toast";
+import {successToast, warningToast} from "@/utils/Toast";
 import {memo, useContext, useEffect, useState} from "react";
 // import {BiLoader} from "react-icons/bi";
 import {MdNotificationsOff, MdNotificationsActive} from "react-icons/md";

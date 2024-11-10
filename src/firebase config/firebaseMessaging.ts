@@ -32,7 +32,7 @@ export async function storeTokenToDB() {
         );
 
         onMessage(messaging, (payload) => {
-          warningToast(payload.notification?.body);
+          warningToast(payload.data?.body);
         });
       } else {
         // Request permission if no token is received
