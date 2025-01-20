@@ -35,11 +35,14 @@ async function sendNotification(location: string): Promise<void> {
     });
 
     if (tokens.length > 0) {
+      const currentTime = new Date().toLocaleTimeString("en-US", {
+        timeZone: "Asia/Manila",
+      });
       const message: admin.messaging.MulticastMessage = {
         tokens,
         data: {
           title: "EcoSort",
-          body: `Alert: The bins at ${location.toUpperCase()} are nearing full capacity. Kindly ensure they are emptied soon.`,
+          body: `Alert: The bins at ${location.toUpperCase()} are nearing full capacity. Kindly ensure they are emptied soon. Time: ${currentTime}`,
           icon: "https://project-robert-bb066.web.app/notifLogo.png",
         },
       };
@@ -172,16 +175,16 @@ export const checkDocuments = onDocumentUpdated(
       };
     } = {
       Paper: {
-        max: 180,
-        min: 138,
+        max: 210,
+        min: 145,
       },
       Bottle: {
-        max: 105,
-        min: 73,
+        max: 95,
+        min: 74,
       },
       Metal: {
-        max: 230,
-        min: 103,
+        max: 220,
+        min: 105,
       },
     };
 

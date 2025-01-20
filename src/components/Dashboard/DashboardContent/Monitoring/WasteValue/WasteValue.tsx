@@ -13,6 +13,7 @@ import {fetchSingleDocument} from "@/firebase config/firebaseCRUD";
 import {errorAlert} from "@/utils/SweetAlerts";
 import {ThemeContext} from "@/contexts/ThemeContextProvider";
 import {BiLoader} from "react-icons/bi";
+import "react-toastify/dist/ReactToastify.css";
 
 interface Names {
   Metal: string;
@@ -36,16 +37,22 @@ interface WasteValue extends GenericValue {
 
 interface GenericValue {
   Paper: number;
+  PaperValid: boolean;
   Bottle: number;
+  BottleValid: boolean;
   Metal: number;
+  MetalValid: boolean;
 }
 
 export default function WasteValue() {
   const [wasteValues, setWasteValues] = useState<WasteValue>({
     id: "",
     Paper: 0,
+    PaperValid: false,
     Bottle: 0,
+    BottleValid: false,
     Metal: 0,
+    MetalValid: false,
   });
   const {location} = useParams();
   const navigate = useNavigate();
@@ -56,23 +63,26 @@ export default function WasteValue() {
     {
       image: images["Paper"],
       val: wasteValues.Paper,
+      isSensorWorking: wasteValues.PaperValid,
       name: displayNames["Paper"],
-      max: 180,
-      min: 138,
+      max: 210,
+      min: 145,
     },
     {
       image: images["Metal"],
       val: wasteValues.Metal,
+      isSensorWorking: wasteValues.MetalValid,
       name: displayNames["Metal"],
-      max: 230,
-      min: 103,
+      max: 220,
+      min: 105,
     },
     {
       image: images["Bottle"],
       val: wasteValues.Bottle,
+      isSensorWorking: wasteValues.BottleValid,
       name: displayNames["Bottle"],
-      max: 105,
-      min: 73,
+      max: 95,
+      min: 74,
     },
   ];
 
@@ -87,6 +97,7 @@ export default function WasteValue() {
       }
     } catch (e) {
       errorAlert("Error fetching waste location values", isDarkMode);
+    } finally {
     }
   }
 

@@ -41,35 +41,6 @@ export async function updateData(
   await setDoc(recordRef, formData);
 }
 
-// for fetchSms
-// export async function fetchSmsData() {
-//   const docRef = doc(db, "notification", "smsSettings");
-//   const docSnapshot = await getDoc(docRef);
-//   if (!docSnapshot.exists()) {
-//     throw new Error("Could not find");
-//   }
-
-//   const subCollectionSnap = await getDocs(collection(docRef, "contactNumber"));
-//   const subCollectionData = subCollectionSnap.docs.map((doc) => ({
-//     id: doc.id,
-//     data: doc.data() as ContactNumbers,
-//   }));
-
-//   return {
-//     smsSettings: docSnapshot.data() as SmsSettings,
-//     contactNumbers: subCollectionData,
-//   };
-// }
-
-// interface ContactNumbers {
-//   contactNumber: string;
-//   isEnable: boolean;
-//   name: string;
-// }
-// interface SmsSettings {
-//   isEnable: boolean;
-// }
-
 export async function fetchSingleDocument<T>(
   collectionName: string,
   documentName: string
@@ -99,9 +70,3 @@ export async function addDocumentInCollection<T extends Object>(
 ) {
   await setDoc(doc(db, collectionName, documentName), defaultField);
 }
-
-// interface DefaultFieldType {
-//   Paper: number;
-//   Metal: number;
-//   Plastic: number;
-// }

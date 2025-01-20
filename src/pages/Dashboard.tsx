@@ -17,11 +17,11 @@ import {BiLoader} from "react-icons/bi";
 
 const defaultField = {
   Paper: 0,
-  PaperValid: true,
+  PaperValid: false,
   Metal: 0,
-  MetalValid: true,
+  MetalValid: false,
   Bottle: 0,
-  BottleValid: true,
+  BottleValid: false,
 };
 
 export default function Dashboard() {
