@@ -6,8 +6,8 @@ import {
   StyleSheet,
   Image,
 } from "@react-pdf/renderer";
-import logo from "../../../../assets/png/iba-logo.png";
-import deped from "../../../../assets/png/deped.png";
+import smartseg from "../../../../assets/png/smartseg_logo.png";
+import cos from "../../../../assets/png/pdfLogo.png";
 
 // Define styles
 const styles = StyleSheet.create({
@@ -30,12 +30,13 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   headerImg: {
-    width: 80,
-    height: 80,
+    width: 100,
+    height: 100,
     objectFit: "contain",
   },
   yesO: {
     marginTop: 10,
+    fontWeight: "extrabold",
   },
   titleText: {
     fontSize: 25,
@@ -120,7 +121,7 @@ export default function PDF({
       acc.weight += parseFloat(item.weight);
       return acc;
     },
-    {amount: 0, weight: 0}
+    {amount: 0, weight: 0},
   );
 
   const summaryData = [
@@ -143,7 +144,7 @@ export default function PDF({
 
   totalSales.forEach((item) => {
     const currentWaste = summaryData.find(
-      (sItem) => sItem.label.toLowerCase() === item.label.toLowerCase()
+      (sItem) => sItem.label.toLowerCase() === item.label.toLowerCase(),
     );
     if (currentWaste) {
       currentWaste.totalSale += Number(item.value);
@@ -152,7 +153,7 @@ export default function PDF({
 
   totalWeight.forEach((item) => {
     const currentWaste = summaryData.find(
-      (sItem) => sItem.label.toLowerCase() === item.label.toLowerCase()
+      (sItem) => sItem.label.toLowerCase() === item.label.toLowerCase(),
     );
     if (currentWaste) {
       currentWaste.totalWeight += Number(item.value);
@@ -164,16 +165,14 @@ export default function PDF({
       <Page>
         {/* header */}
         <View style={styles.header}>
-          <Image src={logo} style={styles.headerImg} />
+          <Image src={cos} style={styles.headerImg} />
           <View style={styles.headerTextContainer}>
-            <Text style={styles.headerText}>Department of Education</Text>
-            <Text style={styles.headerText}>Iba National High School</Text>
-            <Text style={styles.headerText}>Region III</Text>
-            <Text style={[styles.headerText, styles.yesO]}>
-              Youth for Environment in Schools Organization (YES-O)
-            </Text>
+            <Text style={styles.headerText}>Bulacan State University</Text>
+            <Text style={styles.headerText}>College of Science</Text>
+            {/* <Text style={styles.headerText}>Region III</Text> */}
+            <Text style={[styles.headerText, styles.yesO]}>SmartSeg</Text>
           </View>
-          <Image src={deped} style={styles.headerImg} />
+          <Image src={smartseg} style={styles.headerImg} />
         </View>
         {/* table */}
         <Text style={styles.titleText}>

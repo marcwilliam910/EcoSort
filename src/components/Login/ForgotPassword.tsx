@@ -30,65 +30,84 @@ export default function ForgotPassword({onBack}: ForgotPasswordProps) {
   }
 
   return (
-    <div className="">
+    <>
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
+
       <ToastContainer
         position="top-center"
         autoClose={false}
         closeOnClick
         theme="dark"
       />
+
+      {/* Heading — same structure as LoginForm */}
+      <h1 className="ss-heading">
+        Reset
+        <br />
+        Password 🔑
+      </h1>
+      <p className="ss-subheading">
+        Enter your email and we'll send you a reset link.
+      </p>
+
       <form
-        className="p-5 text-white bg-transparent space-y-7 w-72 backdrop-blur-sm backdrop-brightness-50 lg:py-8 lg:w-80 "
         onSubmit={(e) => {
           e.preventDefault();
           resetPassword();
         }}
+        noValidate
       >
-        <div className="space-y-2">
-          <label htmlFor="email" className="text-lg font-bold lg:text-xl">
-            Please enter your email
+        <div className="ss-field">
+          <label className="ss-label" htmlFor="reset-email">
+            Email address
+          </label>
+          <div className="ss-input-wrap">
             <input
+              id="reset-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              id="email"
-              className={`w-full p-1.5 px-3 rounded-md text-base bg-transparent border outline-none mt-2 border-white ${
-                error && "border-red-500"
-              }`}
+              className={`ss-input${error ? " error" : ""}`}
+              placeholder="you@example.com"
+              autoComplete="email"
             />
-          </label>
-
-          <div className="ml-1.5">
-            {error === "auth/invalid-email" && (
-              <p className="text-xs text-red-500 ">Please enter valid email</p>
-            )}
-            {error === "auth/missing-email" && (
-              <p className="text-xs text-red-500 ">
-                "Please enter your email first"
-              </p>
-            )}
-            {error === "auth/user-not-found" && (
-              <p className="text-xs text-red-500 ">User not found</p>
-            )}
           </div>
+
+          {error === "auth/invalid-email" && (
+            <p className="ss-error-msg">⚠ Please enter a valid email</p>
+          )}
+          {error === "auth/missing-email" && (
+            <p className="ss-error-msg">⚠ Please enter your email first</p>
+          )}
+          {error === "auth/user-not-found" && (
+            <p className="ss-error-msg">⚠ No account found with this email</p>
+          )}
         </div>
 
-        <div className="flex items-center justify-between">
-          <p
-            className="text-xs cursor-pointer hover:underline md:text-sm"
-            onClick={onBack}
-          >
-            Back to login
-          </p>
-          <button
-            type="submit"
-            className="flex items-center justify-center w-16 h-8 text-sm duration-150 bg-green-500 md:text-base hover:bg-green-600"
-          >
-            {loading ? <BiLoader className="size-6 animate-spin" /> : "Reset"}
-          </button>
+        {/* Actions row */}
+        <div className="ss-row" style={{marginTop: 8}}>
+          <span className="ss-forgot" onClick={onBack} role="button">
+            ← Back to login
+          </span>
         </div>
+
+        <button type="submit" className="ss-btn" disabled={loading}>
+          {loading ? (
+            <BiLoader
+              size={22}
+              style={{animation: "spin 1s linear infinite"}}
+            />
+          ) : (
+            "Send Reset Link"
+          )}
+        </button>
       </form>
-    </div>
+    </>
   );
 }
 

@@ -5,7 +5,6 @@ import {NavLink, useNavigate} from "react-router-dom";
 import {TbHeartRateMonitor} from "react-icons/tb";
 import {auth} from "../../firebase config/firebase";
 import {signOut} from "firebase/auth";
-import {FaRecycle} from "react-icons/fa";
 import {FaCaretDown, FaCaretUp} from "react-icons/fa";
 import {IoIosAddCircle} from "react-icons/io";
 import {SensorLocationContext} from "@/contexts/SensorLocationContextProvider";
@@ -13,6 +12,7 @@ import {deleteData} from "@/firebase config/firebaseCRUD";
 import {deleteAlert, errorAlert} from "@/utils/SweetAlerts";
 import {ThemeContext} from "@/contexts/ThemeContextProvider";
 import {IoMdRemove} from "react-icons/io";
+import smartseg_logo from "@/assets/png/smartseg_logo.png";
 
 interface SideBarProps {
   onToggleNav: () => void;
@@ -42,17 +42,15 @@ export default function Sidebar({
   return (
     <>
       <nav
-        className={`fixed top-0 flex flex-col pt-12 p-3 lg:pt-0 items-center w-5/6 h-dvh lg:h-screen  gap-2 md:gap-5 lg:gap-8 transition-all duration-150 ease-in-out z-50 sm:w-2/4 md:w-72 lg:sticky bg-light-card dark:bg-dark-card dark:border-none ${
+        className={`fixed top-0 flex flex-col pt-12 p-3 lg:pt-0 items-center w-5/6 h-dvh lg:h-screen  gap-2 md:gap-5 lg:gap-2 transition-all duration-150 ease-in-out z-50 sm:w-2/4 md:w-72 lg:sticky bg-light-card dark:bg-dark-card dark:border-none ${
           isNavOpen ? "left-0" : "-left-full"
         }`}
       >
         <div className="absolute cursor-pointer top-4 left-3 lg:hidden">
           <MdMenuOpen className="size-7" onClick={onToggleNav} />
         </div>
-        <h1 className="flex flex-col items-center gap-3 px-3 py-5 text-2xl font-bold text-center text-light-primary font-title lg:text-2xl dark:text-dark-primary">
-          Project ROBERT
-          <FaRecycle />
-        </h1>
+
+        <img src={smartseg_logo} alt="smartseg logo" className="w-40" />
 
         <div className="w-5/6 border-t-2 border-zinc-300 dark:border-zinc-600"></div>
 

@@ -24,7 +24,7 @@ export default function DashboardContent({onToggleNav}: DashboardContentProps) {
           />
         </div>
         <h1 className="flex-1 text-lg font-bold text-center sm:text-xl md:text-2xl lg:text-2xl dark:text-dark-primary text-light-primary">
-          EcoSort
+          SmartSeg
         </h1>
         <div
           className="p-2.5 rounded-full cursor-pointer hover:bg-[#d6d7dbe2] dark:hover:bg-[#343A46] text-light-text dark:text-dark-text duration-150"

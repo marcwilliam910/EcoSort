@@ -11,10 +11,10 @@ import {deleteData, fetchData} from "../../../../firebase config/firebaseCRUD";
 import {deleteAlert, errorAlert} from "../../../../utils/SweetAlerts";
 // import DynamicChart, {LineChart} from "./Charts";
 const LineChart = lazy(() =>
-  import("./Charts").then((module) => ({default: module.LineChart}))
+  import("./Charts").then((module) => ({default: module.LineChart})),
 );
 const DynamicChart = lazy(() =>
-  import("./Charts").then((module) => ({default: module.DynamicChart}))
+  import("./Charts").then((module) => ({default: module.DynamicChart})),
 );
 
 import {FaPrint} from "react-icons/fa";
@@ -93,10 +93,10 @@ export default function RecordKeeping() {
   const [months, setMonths] = useState<string[]>([]);
   const [years, setYears] = useState<string[]>([]);
   const [selectedMonth, setSelectedMonth] = useState<string>(
-    monthNames[new Date().getMonth()]
+    monthNames[new Date().getMonth()],
   );
   const [selectedYear, setSelectedYear] = useState<string>(
-    new Date().getFullYear().toString()
+    new Date().getFullYear().toString(),
   );
   const [totalWasteSales, setTotalWasteSales] = useState<ChartData[]>([]);
   const [totalWasteWeight, setTotalWasteWeight] = useState<ChartData[]>([]);
@@ -191,10 +191,10 @@ export default function RecordKeeping() {
       if (selectedYear === year) {
         // to get the yearly sales and weight
         const isMonthExistingInSales = yearlySales.find(
-          (s) => s.month === month
+          (s) => s.month === month,
         );
         const isMonthExistingInWeight = yearlyWeight.find(
-          (s) => s.month === month
+          (s) => s.month === month,
         );
         if (isMonthExistingInSales && isMonthExistingInWeight) {
           isMonthExistingInSales.values[type] += Number(amount);
@@ -227,14 +227,14 @@ export default function RecordKeeping() {
     }
     // to sort the month name
     const sortedMonth = [...monthSet].sort(
-      (a, b) => monthNames.indexOf(a) - monthNames.indexOf(b)
+      (a, b) => monthNames.indexOf(a) - monthNames.indexOf(b),
     );
 
     const sortedSalesRecord = yearlySales.sort(
-      (a, b) => monthNames.indexOf(a.month) - monthNames.indexOf(b.month)
+      (a, b) => monthNames.indexOf(a.month) - monthNames.indexOf(b.month),
     );
     const sortedWeightRecord = yearlyWeight.sort(
-      (a, b) => monthNames.indexOf(a.month) - monthNames.indexOf(b.month)
+      (a, b) => monthNames.indexOf(a.month) - monthNames.indexOf(b.month),
     );
 
     setYearlySalesData(sortedSalesRecord);
@@ -313,13 +313,13 @@ export default function RecordKeeping() {
         }
       }
     },
-    [isDarkMode]
+    [isDarkMode],
   );
 
   const handleEditRecord = useCallback(
     (id: string) => {
       const editRecord: Record | undefined = records.find(
-        (record) => record.id === id
+        (record) => record.id === id,
       );
       if (editRecord) {
         setIsEditing(true);
@@ -329,7 +329,7 @@ export default function RecordKeeping() {
         errorAlert("Something went wrong! No record found", isDarkMode);
       }
     },
-    [records, isDarkMode]
+    [records, isDarkMode],
   );
 
   async function downloadPdf() {
@@ -345,7 +345,7 @@ export default function RecordKeeping() {
         year={selectedYear}
         totalWeight={totalWasteWeight}
         totalSales={totalWasteSales}
-      />
+      />,
     ).toBlob();
 
     const url = URL.createObjectURL(blob);
@@ -412,7 +412,7 @@ export default function RecordKeeping() {
               onClick={downloadPdf}
             >
               <FaPrint className="size-2.5 sm:size-3" />
-              <p className="font-bold">Print</p>
+              <p className="font-bold">Print Record</p>
             </button>
           )}
         </div>
@@ -485,7 +485,7 @@ export default function RecordKeeping() {
                         .sort(
                           (a, b) =>
                             Number(b.data.date.split("-").join("")) -
-                            Number(a.data.date.split("-").join(""))
+                            Number(a.data.date.split("-").join("")),
                         )
                         .map((record) => (
                           <TableRow

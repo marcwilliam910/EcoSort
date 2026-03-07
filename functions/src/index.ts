@@ -41,7 +41,7 @@ async function sendNotification(location: string): Promise<void> {
       const message: admin.messaging.MulticastMessage = {
         tokens,
         data: {
-          title: "EcoSort",
+          title: "SmartSeg",
           body: `Alert: The bins at ${location.toUpperCase()} are nearing full capacity. Kindly ensure they are emptied soon. Time: ${currentTime}`,
           icon: "https://project-robert-bb066.web.app/notifLogo.png",
         },
@@ -69,7 +69,7 @@ async function sendNotification(location: string): Promise<void> {
 async function sendSMS(
   location: string,
   contactNumbers: string[],
-  apikey: string
+  apikey: string,
 ): Promise<void> {
   if (contactNumbers.length === 0) {
     console.log("No contact numbers found.");
@@ -85,13 +85,13 @@ async function sendSMS(
     const response = await axios.post(url, {
       apikey,
       message,
-      sendername: "EcoSort",
+      sendername: "SmartSeg",
       number: numbersString,
     });
 
     if (response.data && response.data.message_id) {
       console.log(
-        `SMS sent successfully to ${numbersString}. Message ID: ${response.data.message_id}`
+        `SMS sent successfully to ${numbersString}. Message ID: ${response.data.message_id}`,
       );
     } else {
       console.error("Failed to send SMS. Unexpected response:", response.data);
@@ -199,7 +199,7 @@ export const checkDocuments = onDocumentUpdated(
     const average = Math.floor(
       (fieldConfig[changedField.name].max +
         fieldConfig[changedField.name].min) /
-        2
+        2,
     );
     if (changedField.value < average) {
       await docRef.set({
@@ -235,7 +235,7 @@ export const checkDocuments = onDocumentUpdated(
         lastValue: changedField.value,
       });
     }
-  }
+  },
 );
 
 export const getSemaphoreAccountData = onCall(
@@ -257,5 +257,5 @@ export const getSemaphoreAccountData = onCall(
       console.error("Error retrieving Semaphore balance:", error);
       throw new HttpsError("internal", "Unable to retrieve balance");
     }
-  }
+  },
 );
