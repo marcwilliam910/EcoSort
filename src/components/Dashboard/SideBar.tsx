@@ -192,12 +192,16 @@ function List({
                     }
                   >
                     <li className="py-2.5 pl-1" onClick={onToggle}>
-                      {subItem.id.toLocaleUpperCase()}
+                      {subItem.id === "canteen"
+                        ? "CS"
+                        : subItem.id.toLocaleUpperCase()}
                     </li>
-                    <IoMdRemove
-                      className="hover:text-light-primaryFocusBG dark:hover:text-dark-primary md:text-xl"
-                      onClick={() => handleDeleteLocation(subItem.id)}
-                    />
+                    {submenu.length > 1 && (
+                      <IoMdRemove
+                        className="hover:text-light-primaryFocusBG dark:hover:text-dark-primary md:text-xl"
+                        onClick={() => handleDeleteLocation(subItem.id)}
+                      />
+                    )}
                   </NavLink>
                 ))}
               </>

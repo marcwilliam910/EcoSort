@@ -42,7 +42,7 @@ async function sendNotification(location: string): Promise<void> {
         tokens,
         data: {
           title: "SmartSeg",
-          body: `Alert: The bins at ${location.toUpperCase()} are nearing full capacity. Kindly ensure they are emptied soon. Time: ${currentTime}`,
+          body: `Alert: The bins at CS are nearing full capacity. Kindly ensure they are emptied soon. Time: ${currentTime}`,
           icon: "https://project-robert-bb066.web.app/notifLogo.png",
         },
       };
@@ -76,7 +76,7 @@ async function sendSMS(
     return;
   }
 
-  const message = `Alert: The bins at ${location.toUpperCase()} are nearing full capacity. Kindly ensure they are emptied soon.`;
+  const message = `Alert: The bins at CS are nearing full capacity. Kindly ensure they are emptied soon.`;
   const numbersString = contactNumbers.join(",");
 
   const url = "https://api.semaphore.co/api/v4/messages";

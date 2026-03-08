@@ -91,7 +91,7 @@ export default function WasteValue() {
       if (location) {
         const values = await fetchSingleDocument<GenericValue>(
           "sensor",
-          location
+          location,
         );
         setWasteValues(values);
       }
@@ -102,7 +102,7 @@ export default function WasteValue() {
   }
 
   const wasteValue = wasteLocationValues.find(
-    (waste) => waste.id.toLocaleLowerCase() === location?.toLocaleLowerCase()
+    (waste) => waste.id.toLocaleLowerCase() === location?.toLocaleLowerCase(),
   );
 
   useEffect(() => {
@@ -139,7 +139,7 @@ export default function WasteValue() {
           </Link>
 
           <h1 className="text-4xl font-extrabold text-center text-transparent bg-gradient-to-r from-[#3B8230] to-[#1e90ff] bg-clip-text md:text-5xl md:mt-6 font-sans dark:from-[#4ca340] dark:to-[#40a0ff] mt-2">
-            {location?.toLocaleUpperCase()}
+            {location === "canteen" ? "CS" : location?.toLocaleUpperCase()}
           </h1>
 
           <div className="flex flex-wrap justify-center gap-10 xl:gap-x-14">

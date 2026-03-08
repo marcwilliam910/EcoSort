@@ -54,7 +54,9 @@ export default function Monitor() {
                     />
                   </picture>
                   <h2 className="text-xl font-bold sm:text-2xl">
-                    {value.id.toLocaleUpperCase()}
+                    {value.id === "canteen"
+                      ? "CS"
+                      : value.id.toLocaleUpperCase()}
                   </h2>
                 </div>
               </Link>

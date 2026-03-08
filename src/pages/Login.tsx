@@ -559,6 +559,32 @@ function LoginForm({
   loading,
 }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<{
+    email?: string;
+    password?: string;
+  }>({});
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const errors: {email?: string; password?: string} = {};
+
+    if (!userForm.email.trim()) {
+      errors.email = "Email is required";
+    }
+
+    if (!userForm.password.trim()) {
+      errors.password = "Password is required";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      return;
+    }
+
+    setValidationErrors({});
+    handleLogin(e);
+  };
 
   return (
     <>
@@ -569,7 +595,7 @@ function LoginForm({
       </h1>
       <p className="ss-subheading">Sign in to your SmartSeg account</p>
 
-      <form onSubmit={handleLogin} noValidate>
+      <form onSubmit={handleSubmit} noValidate>
         <div className="ss-field">
           <label className="ss-label" htmlFor="email-input">
             Email address
@@ -577,17 +603,22 @@ function LoginForm({
           <div className="ss-input-wrap">
             <input
               id="email-input"
-              className={`ss-input${error === "email" ? " error" : ""}`}
+              className={`ss-input${
+                error === "email" || validationErrors.email ? " error" : ""
+              }`}
               type="email"
               name="email"
               value={userForm.email}
               onChange={handleUserForm}
-              required
               autoComplete="email"
               placeholder="you@example.com"
             />
           </div>
-          {error === "email" && (
+          {validationErrors.email && (
+            <p className="ss-error-msg">⚠ {validationErrors.email}</p>
+          )}
+
+          {!validationErrors.email && error === "email" && (
             <p className="ss-error-msg">⚠ No account found with this email</p>
           )}
         </div>
@@ -599,12 +630,15 @@ function LoginForm({
           <div className="ss-input-wrap">
             <input
               id="password-input"
-              className={`ss-input${error === "password" ? " error" : ""}`}
+              className={`ss-input${
+                error === "password" || validationErrors.password
+                  ? " error"
+                  : ""
+              }`}
               type={showPassword ? "text" : "password"}
               name="password"
               value={userForm.password}
               onChange={handleUserForm}
-              required
               autoComplete="current-password"
               placeholder="••••••••"
               style={{paddingRight: 44}}
@@ -622,7 +656,11 @@ function LoginForm({
               )}
             </span>
           </div>
-          {error === "password" && (
+          {validationErrors.password && (
+            <p className="ss-error-msg">⚠ {validationErrors.password}</p>
+          )}
+
+          {!validationErrors.password && error === "password" && (
             <p className="ss-error-msg">⚠ Incorrect password</p>
           )}
         </div>
